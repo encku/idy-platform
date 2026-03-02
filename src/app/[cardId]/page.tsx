@@ -61,15 +61,15 @@ export async function generateMetadata({
       title: user.name,
       description,
       type: "profile",
-      ...(user.picture_url && {
-        images: [{ url: user.picture_url, width: 500, height: 500 }],
-      }),
+      images: user.picture_url
+        ? [{ url: user.picture_url, width: 500, height: 500 }]
+        : [{ url: "/og-image.png", width: 1200, height: 630 }],
     },
     twitter: {
-      card: "summary",
+      card: user.picture_url ? "summary" : "summary_large_image",
       title: user.name,
       description,
-      ...(user.picture_url && { images: [user.picture_url] }),
+      images: [user.picture_url || "/og-image.png"],
     },
   }
 }
