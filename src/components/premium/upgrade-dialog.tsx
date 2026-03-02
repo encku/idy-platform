@@ -46,7 +46,6 @@ export function UpgradeDialog({
     >
       <AlertDialogContent
         onEscapeKeyDown={isBlocking ? (e) => e.preventDefault() : undefined}
-        onPointerDownOutside={isBlocking ? (e) => e.preventDefault() : undefined}
       >
         <AlertDialogHeader>
           <div className="flex justify-center mb-2">
