@@ -66,15 +66,11 @@ export async function generateMetadata({
       type: "profile",
       url: `/${cardId}`,
       siteName: "idycard",
-      images: user.picture_url
-        ? [{ url: user.picture_url, width: 500, height: 500 }]
-        : [{ url: "/og-image.png", width: 1200, height: 630 }],
     },
     twitter: {
-      card: user.picture_url ? "summary" : "summary_large_image",
+      card: "summary_large_image",
       title: user.name,
       description,
-      images: [user.picture_url || "/og-image.png"],
     },
   }
 }
