@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff, Loader2, CreditCard } from "lucide-react"
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useTranslation } from "@/lib/i18n/context"
 
-export default function RegisterPage() {
+function RegisterForm() {
   const { t } = useTranslation()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -333,5 +333,13 @@ export default function RegisterPage() {
         </div>
       )}
     </>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   )
 }
