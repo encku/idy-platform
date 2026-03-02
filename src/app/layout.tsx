@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { I18nProvider } from "@/lib/i18n/context";
 import "./globals.css";
@@ -13,30 +14,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "idycard",
-    template: "%s | idycard",
-  },
-  description: "Digital Business Card Platform",
-  icons: {
-    icon: "/favicon.png",
-    apple: "/apple-touch-icon.png",
-  },
-  openGraph: {
-    type: "website",
-    siteName: "idycard",
-    title: "idycard",
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers();
+  const host = headersList.get("host") || "idycard.com";
+  const protocol = headersList.get("x-forwarded-proto") || "https";
+  const baseUrl = `${protocol}://${host}`;
+
+  return {
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: "idycard",
+      template: "%s | idycard",
+    },
     description: "Digital Business Card Platform",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "idycard",
-    description: "Digital Business Card Platform",
-    images: ["/og-image.png"],
-  },
-};
+    icons: {
+      icon: "/favicon.png",
+      apple: "/apple-touch-icon.png",
+    },
+    openGraph: {
+      type: "website",
+      siteName: "idycard",
+      title: "idycard",
+      description: "Digital Business Card Platform",
+      images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "idycard",
+      description: "Digital Business Card Platform",
+      images: ["/og-image.png"],
+    },
+  };
+}
 
 export default function RootLayout({
   children,

@@ -57,10 +57,15 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: `/${cardId}`,
+    },
     openGraph: {
       title: user.name,
       description,
       type: "profile",
+      url: `/${cardId}`,
+      siteName: "idycard",
       images: user.picture_url
         ? [{ url: user.picture_url, width: 500, height: 500 }]
         : [{ url: "/og-image.png", width: 1200, height: 630 }],
