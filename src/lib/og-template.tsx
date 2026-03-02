@@ -89,7 +89,7 @@ export function ProfileTemplate({
           flexDirection: "column",
           justifyContent: "center",
           flex: 1,
-          padding: "60px 80px",
+          padding: "50px 70px",
           position: "relative",
         }}
       >
@@ -97,26 +97,26 @@ export function ProfileTemplate({
           {avatarSrc ? (
             <img
               src={avatarSrc}
-              width={180}
-              height={180}
+              width={260}
+              height={260}
               style={{
                 borderRadius: "50%",
-                border: "4px solid rgba(255,255,255,0.3)",
+                border: "5px solid rgba(255,255,255,0.3)",
                 objectFit: "cover",
               }}
             />
           ) : (
             <div
               style={{
-                width: 180,
-                height: 180,
+                width: 260,
+                height: 260,
                 borderRadius: "50%",
-                border: "4px solid rgba(255,255,255,0.3)",
+                border: "5px solid rgba(255,255,255,0.3)",
                 background: "rgba(0,0,0,0.3)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 72,
+                fontSize: 100,
                 fontWeight: 700,
                 color: "rgba(255,255,255,0.8)",
               }}
@@ -129,16 +129,16 @@ export function ProfileTemplate({
             style={{
               display: "flex",
               flexDirection: "column",
-              marginLeft: 48,
+              marginLeft: 50,
               flex: 1,
             }}
           >
             <div
               style={{
-                fontSize: 56,
+                fontSize: 72,
                 fontWeight: 700,
                 color: "white",
-                lineHeight: 1.2,
+                lineHeight: 1.15,
                 letterSpacing: "-0.02em",
               }}
             >
@@ -147,9 +147,9 @@ export function ProfileTemplate({
             {subtitle && (
               <div
                 style={{
-                  fontSize: 26,
+                  fontSize: 32,
                   color: "rgba(255,255,255,0.7)",
-                  marginTop: 12,
+                  marginTop: 16,
                   lineHeight: 1.4,
                 }}
               >
@@ -166,27 +166,16 @@ export function ProfileTemplate({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 80px 40px",
+          padding: "0 70px 32px",
           position: "relative",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <img
-            src={logoSrc}
-            width={36}
-            height={36}
-            style={{ filter: "invert(1)", opacity: 0.6 }}
-          />
-          <div
-            style={{
-              fontSize: 20,
-              color: "rgba(255,255,255,0.5)",
-              marginLeft: 10,
-            }}
-          >
-            idycard
-          </div>
-        </div>
+        <img
+          src={logoSrc}
+          width={42}
+          height={42}
+          style={{ filter: "invert(1)", opacity: 0.6 }}
+        />
       </div>
     </div>
   )
