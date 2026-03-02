@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { format } from "date-fns"
 import { useTranslation } from "@/lib/i18n/context"
 import { apiClient } from "@/lib/api-client"
 import type { SubscriptionHistoryEvent } from "@/lib/admin/types"
@@ -91,7 +92,7 @@ export function SubscriptionHistoryDialog({
                   )}
                 </div>
                 <span className="text-xs text-muted-foreground shrink-0">
-                  {new Date(event.created_at).toLocaleDateString()}
+                  {format(new Date(event.created_at), "dd.MM.yyyy")}
                 </span>
               </div>
             ))}

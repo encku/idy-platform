@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { Pagination } from "@/components/admin/pagination"
 import { apiClient } from "@/lib/api-client"
+import { format } from "date-fns"
 import { useTranslation } from "@/lib/i18n/context"
 import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query"
 import { toast } from "sonner"
@@ -101,7 +102,7 @@ export function NotificationLogsTable() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {new Date(log.inserted_at).toLocaleString()}
+                    {format(new Date(log.inserted_at), "dd.MM.yyyy")}
                   </TableCell>
                   <TableCell>
                     <Button

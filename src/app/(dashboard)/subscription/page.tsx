@@ -17,6 +17,7 @@ import { AppHeader } from "@/components/dashboard/app-header"
 
 const APP_STORE_URL = "https://apps.apple.com/tr/app/idycard/id6446066914"
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.idycard.android"
+import { format } from "date-fns"
 import { PremiumBadge } from "@/components/premium/premium-badge"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 import { useFeatures } from "@/lib/features/context"
@@ -41,11 +42,11 @@ export default function SubscriptionPage() {
 
   const expiresAt = features?.premium_expires_at
   const expiryDate = expiresAt
-    ? new Date(expiresAt).toLocaleDateString()
+    ? format(new Date(expiresAt), "dd.MM.yyyy")
     : null
   const trialEndsAt = features?.trial_ends_at
   const trialEndDate = trialEndsAt
-    ? new Date(trialEndsAt).toLocaleDateString()
+    ? format(new Date(trialEndsAt), "dd.MM.yyyy")
     : null
   const trialDaysRemaining = trialEndsAt
     ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))

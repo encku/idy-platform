@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { apiClient } from "@/lib/api-client"
+import { format } from "date-fns"
 import { useTranslation } from "@/lib/i18n/context"
 import { useDebouncedSearch } from "@/lib/hooks/use-debounced-search"
 import { toast } from "sonner"
@@ -153,7 +154,7 @@ export function DeviceManagementTable() {
                       {device.token}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {new Date(device.last_active).toLocaleString()}
+                      {format(new Date(device.last_active), "dd.MM.yyyy")}
                     </TableCell>
                     <TableCell>
                       <Button

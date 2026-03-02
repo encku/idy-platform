@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
+import { format } from "date-fns"
 import { CompanyActions } from "./company-actions"
 import { useTranslation } from "@/lib/i18n/context"
 import type { Company } from "@/lib/admin/types"
@@ -77,7 +78,7 @@ export function CompanyTable({ companies, loading, onUpdate }: CompanyTableProps
               </TableCell>
               <TableCell>{company.country}</TableCell>
               <TableCell className="text-muted-foreground text-sm">
-                {new Date(company.inserted_at).toLocaleDateString()}
+                {format(new Date(company.inserted_at), "dd.MM.yyyy")}
               </TableCell>
               <TableCell>
                 <CompanyActions company={company} onUpdate={onUpdate} />

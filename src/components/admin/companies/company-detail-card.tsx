@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Building2, MapPin, Globe } from "lucide-react"
+import { format } from "date-fns"
 import { useTranslation } from "@/lib/i18n/context"
 import type { CompanyDetail } from "@/lib/admin/types"
 
@@ -30,7 +31,7 @@ export function CompanyDetailCard({ company }: CompanyDetailCardProps) {
           <div>
             <CardTitle>{company.name}</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              {t("createdAt")}: {new Date(company.inserted_at).toLocaleDateString()}
+              {t("createdAt")}: {format(new Date(company.inserted_at), "dd.MM.yyyy")}
             </p>
           </div>
         </div>

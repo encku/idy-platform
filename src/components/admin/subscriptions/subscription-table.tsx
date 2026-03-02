@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { GrantPremiumDialog } from "./grant-premium-dialog"
 import { SubscriptionHistoryDialog } from "./subscription-history-dialog"
+import { format } from "date-fns"
 import { useTranslation } from "@/lib/i18n/context"
 import { apiClient } from "@/lib/api-client"
 import type { AdminSubscription } from "@/lib/admin/types"
@@ -119,7 +120,7 @@ export function SubscriptionTable({
                   </TableCell>
                   <TableCell className="text-muted-foreground text-xs">
                     {sub.expires_at
-                      ? new Date(sub.expires_at).toLocaleDateString()
+                      ? format(new Date(sub.expires_at), "dd.MM.yyyy")
                       : sub.plan_type === "lifetime"
                         ? t("unlimited")
                         : "-"}
