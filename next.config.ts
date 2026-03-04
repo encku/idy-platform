@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
+import pkg from "./package.json" with { type: "json" };
 
 const nextConfig: NextConfig = {
   output: "standalone",
   reactCompiler: true,
   env: {
-    NEXT_PUBLIC_APP_VERSION: process.env.APP_VERSION || "1.0.0",
+    NEXT_PUBLIC_APP_VERSION: pkg.version,
   },
   images: {
     remotePatterns: [

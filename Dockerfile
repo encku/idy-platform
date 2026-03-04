@@ -12,7 +12,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN export APP_VERSION=$(node -p "require('./package.json').version") && pnpm build
+RUN pnpm build
 
 # Stage 3: Production runner
 FROM node:22-alpine AS runner
