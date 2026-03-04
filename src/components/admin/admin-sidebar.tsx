@@ -126,6 +126,11 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
           </nav>
         </ScrollArea>
 
+        {/* Version */}
+        <p className="text-center text-[10px] text-sidebar-foreground/30 py-1">
+          v{process.env.NEXT_PUBLIC_APP_VERSION}
+        </p>
+
         {/* User info */}
         <div className="border-t p-3">
           {collapsed ? (

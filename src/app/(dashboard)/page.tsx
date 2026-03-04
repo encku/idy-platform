@@ -387,6 +387,10 @@ export default function ProfilePage() {
         ) : null}
       </div>
       </PullToRefresh>
+
+      <p className="text-center text-[10px] text-muted-foreground/40 pb-2">
+        v{process.env.NEXT_PUBLIC_APP_VERSION}
+      </p>
     </>
   )
 }
