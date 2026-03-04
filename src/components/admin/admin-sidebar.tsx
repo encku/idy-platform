@@ -18,6 +18,7 @@ import {
   LogOut,
   Eye,
   Crown,
+  FolderSync,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -39,6 +40,7 @@ const adminNavItems = [
   { href: "/admin/viewers", icon: Eye, labelKey: "adminViewers" },
   { href: "/admin/subscriptions", icon: Crown, labelKey: "adminSubscriptions" },
   { href: "/admin/analytics", icon: BarChart3, labelKey: "adminAnalytics" },
+  { href: "/admin/ad-sync", icon: FolderSync, labelKey: "adminADSync" },
   { href: "/admin/notifications", icon: Bell, labelKey: "adminNotifications" },
   { href: "/admin/field-types", icon: Layers, labelKey: "adminFieldTypes" },
 ]

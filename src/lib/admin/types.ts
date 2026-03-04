@@ -342,6 +342,185 @@ export interface SyncAllResult {
   failed: number
 }
 
+// ─── AD Sync Types ───
+
+export interface ADConnection {
+  id: number
+  company_id: number
+  company_name?: string
+  connection_type: "ldap" | "azure_ad"
+  display_name: string
+  is_active: boolean
+  sync_interval_minutes: number
+  last_sync_at: string | null
+  last_sync_status: "never" | "success" | "partial" | "failed"
+  last_sync_error: string | null
+  auto_create_cards: boolean
+  auto_deactivate_cards: boolean
+  conflict_strategy: "ad_wins" | "manual_wins" | "last_write_wins"
+  default_card_type_id: number
+  default_color_id: number
+  linked_user_count?: number
+  inserted_at: string
+  updated_at?: string
+}
+
+export interface ADConnectionDetail extends ADConnection {
+  // LDAP fields
+  ldap_host?: string
+  ldap_port?: number
+  ldap_use_tls?: boolean
+  ldap_bind_dn?: string
+  ldap_bind_password_set?: boolean
+  ldap_base_dn?: string
+  ldap_user_filter?: string
+  // Azure AD fields
+  azure_tenant_id?: string
+  azure_client_id?: string
+  azure_client_secret_set?: boolean
+  azure_scopes?: string
+  // SSO fields
+  sso_enabled?: boolean
+  oidc_redirect_uri?: string
+  oidc_scopes?: string
+  sso_auto_create_users?: boolean
+  sso_default_role?: string
+  // SCIM
+  scim_bearer_token_set?: boolean
+}
+
+export interface ADConnectionCreatePayload {
+  company_id: number
+  connection_type: "ldap" | "azure_ad"
+  display_name: string
+  // LDAP
+  ldap_host?: string
+  ldap_port?: number
+  ldap_use_tls?: boolean
+  ldap_bind_dn?: string
+  ldap_bind_password?: string
+  ldap_base_dn?: string
+  ldap_user_filter?: string
+  // Azure AD
+  azure_tenant_id?: string
+  azure_client_id?: string
+  azure_client_secret?: string
+  // Settings
+  sync_interval_minutes?: number
+  auto_create_cards?: boolean
+  auto_deactivate_cards?: boolean
+  conflict_strategy?: "ad_wins" | "manual_wins" | "last_write_wins"
+  default_card_type_id?: number
+  default_color_id?: number
+  default_password?: string
+}
+
+export interface ADAttributeMapping {
+  id: number
+  ad_connection_id: number
+  ad_attribute: string
+  target_type: "user_field" | "card_field" | "profile_field"
+  user_column?: string
+  field_type_id?: number
+  field_name?: string
+  profile_column?: string
+  transform_rule: string
+  is_active: boolean
+  sort_order: number
+}
+
+export interface ADSyncLog {
+  id: number
+  ad_connection_id: number
+  sync_type: "full" | "delta" | "manual"
+  triggered_by: "scheduler" | "manual" | "webhook"
+  triggered_by_user_id: number | null
+  started_at: string
+  completed_at: string | null
+  duration_ms: number | null
+  status: "running" | "success" | "partial" | "failed"
+  total_ad_users: number
+  users_created: number
+  users_updated: number
+  users_deactivated: number
+  users_skipped: number
+  users_errored: number
+  cards_created: number
+  cards_updated: number
+  error_message: string | null
+}
+
+export interface ADLinkedUser {
+  id: number
+  ad_object_id: string
+  ad_display_name: string | null
+  ad_email: string | null
+  ad_account_enabled: boolean
+  user_id: number | null
+  user_name?: string
+  card_id: number | null
+  sync_status: "pending" | "synced" | "error" | "conflict" | "deactivated"
+  sync_error: string | null
+  last_synced_at: string | null
+}
+
+export interface ADSyncPreview {
+  total_ad_users: number
+  to_create: number
+  to_update: number
+  to_deactivate: number
+  to_skip: number
+  preview_users: Array<{
+    ad_display_name: string
+    ad_email: string
+    action: "create" | "update" | "deactivate" | "skip"
+    changes?: string[]
+  }>
+}
+
+// ─── AD Group Role Mapping Types ───
+
+export interface ADGroupRoleMapping {
+  id?: number
+  ad_connection_id: number
+  ad_group_id: string
+  ad_group_name: string
+  idycard_role: "admin" | "company_admin" | "read_only" | "viewer"
+}
+
+// ─── AD Email Domain Types ───
+
+export interface ADEmailDomain {
+  id: number
+  ad_connection_id: number
+  domain: string
+  is_primary: boolean
+  inserted_at?: string
+}
+
+// ─── SSO Config Types ───
+
+export interface SSOConfig {
+  sso_enabled: boolean
+  oidc_redirect_uri: string | null
+  oidc_scopes: string | null
+  sso_auto_create_users: boolean
+  sso_default_role: string
+  email_domains: ADEmailDomain[]
+}
+
+export interface SSOLoginLog {
+  id: number
+  ad_connection_id: number
+  user_id: number | null
+  email: string
+  status: string
+  error_message: string | null
+  ip_address: string
+  ad_groups: string[] | null
+  inserted_at: string
+}
+
 // ─── Paginated Response ───
 
 export interface PaginatedResponse<T> {
