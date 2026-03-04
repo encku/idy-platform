@@ -1,9 +1,9 @@
 "use client"
 
-import { Suspense, useState } from "react"
+import { Suspense, useState, useEffect, useRef, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,10 +15,52 @@ function LoginForm() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSSOLoading, setIsSSOLoading] = useState(false)
   const [error, setError] = useState("")
+  const [ssoAvailable, setSSOAvailable] = useState(false)
+  const [ssoConnectionName, setSSOConnectionName] = useState("")
+  const ssoCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  // SSO discovery: check email domain
+  const checkSSO = useCallback(async (emailValue: string) => {
+    const atIndex = emailValue.indexOf("@")
+    if (atIndex === -1 || emailValue.indexOf(".", atIndex) === -1) {
+      setSSOAvailable(false)
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/auth/sso/check?email=${encodeURIComponent(emailValue)}`)
+      if (res.ok) {
+        const data = await res.json()
+        if (data.data?.sso_available) {
+          setSSOAvailable(true)
+          setSSOConnectionName(data.data.connection_name || "SSO")
+        } else {
+          setSSOAvailable(false)
+        }
+      } else {
+        setSSOAvailable(false)
+      }
+    } catch {
+      setSSOAvailable(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (ssoCheckTimer.current) clearTimeout(ssoCheckTimer.current)
+    if (email.length > 5 && email.includes("@")) {
+      ssoCheckTimer.current = setTimeout(() => checkSSO(email), 500)
+    } else {
+      setSSOAvailable(false)
+    }
+    return () => {
+      if (ssoCheckTimer.current) clearTimeout(ssoCheckTimer.current)
+    }
+  }, [email, checkSSO])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -43,6 +85,37 @@ function LoginForm() {
       setError(err instanceof Error ? err.message : t("errorOccurred"))
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  async function handleSSOLogin() {
+    setError("")
+    setIsSSOLoading(true)
+
+    try {
+      const redirectAfter = searchParams.get("from") || "/"
+      const res = await fetch("/api/auth/sso/init", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, redirect_after: redirectAfter }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        throw new Error(data?.error || "SSO initialization failed")
+      }
+
+      const data = await res.json()
+      const authURL = data.data?.authorization_url
+      if (authURL) {
+        window.location.href = authURL
+      } else {
+        throw new Error("No authorization URL returned")
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("errorOccurred"))
+    } finally {
+      setIsSSOLoading(false)
     }
   }
 
@@ -120,6 +193,42 @@ function LoginForm() {
                 autoFocus
               />
             </div>
+
+            {/* SSO Button - shown when SSO is available for the email domain */}
+            {ssoAvailable && (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-10"
+                  onClick={handleSSOLogin}
+                  disabled={isSSOLoading}
+                >
+                  {isSSOLoading ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      {t("loggingIn")}
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="size-4" />
+                      {t("ssoLogin") || `Sign in with ${ssoConnectionName}`}
+                    </>
+                  )}
+                </Button>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      {t("or") || "or"}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="password">{t("password")}</Label>
