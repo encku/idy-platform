@@ -58,6 +58,15 @@ export function FieldForm({
   const isFormatted =
     fieldType.format && Object.keys(fieldType.format).length > 0
 
+  const primitiveTypes = ["string", "number", "boolean", "integer", "float", "text"]
+
+  function formatLabel(key: string, label: string): string {
+    if (primitiveTypes.includes(label.toLowerCase())) {
+      return t(key)
+    }
+    return label
+  }
+
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -138,7 +147,7 @@ export function FieldForm({
       {/* Field Name */}
       {!disableNameEdit && (
         <div className="space-y-2">
-          <Label>{t("fieldName")}</Label>
+          <Label>{isFormatted ? t(fieldType.name) : t("fieldName")}</Label>
           <Input
             value={name}
             onChange={(e) => onNameChange(e.target.value)}
@@ -182,7 +191,7 @@ export function FieldForm({
         <div className="space-y-3">
           {Object.entries(fieldType.format!).map(([key, label]) => (
             <div key={key} className="space-y-2">
-              <Label>{label}</Label>
+              <Label>{formatLabel(key, label)}</Label>
               <Input
                 value={formattedData[key] || ""}
                 onChange={(e) =>
