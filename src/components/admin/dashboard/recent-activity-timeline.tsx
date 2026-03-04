@@ -2,13 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  UserPlus,
-  CreditCard,
-  Bell,
-  Activity,
-  Eye,
-} from "lucide-react"
+import { UserPlus, CreditCard, Activity } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { tr, enUS } from "date-fns/locale"
 import { useTranslation } from "@/lib/i18n/context"
@@ -21,14 +15,30 @@ interface RecentActivityTimelineProps {
   loading?: boolean
 }
 
-const activityConfig: Record<string, { icon: typeof Activity; color: string }> = {
-  user_created: { icon: UserPlus, color: "text-green-500 bg-green-500/10" },
-  card_activated: { icon: CreditCard, color: "text-blue-500 bg-blue-500/10" },
-  notification_sent: { icon: Bell, color: "text-orange-500 bg-orange-500/10" },
-  card_viewed: { icon: Eye, color: "text-purple-500 bg-purple-500/10" },
+const activityConfig: Record<
+  string,
+  { icon: typeof Activity; color: string; titleKey: string; descKey: string }
+> = {
+  card_activation: {
+    icon: CreditCard,
+    color: "text-blue-500 bg-blue-500/10",
+    titleKey: "activityCardActivation",
+    descKey: "activityCardActivationDesc",
+  },
+  user_registration: {
+    icon: UserPlus,
+    color: "text-green-500 bg-green-500/10",
+    titleKey: "activityUserRegistration",
+    descKey: "activityUserRegistrationDesc",
+  },
 }
 
-const fallbackConfig = { icon: Activity, color: "text-muted-foreground bg-muted" }
+const fallbackConfig = {
+  icon: Activity,
+  color: "text-muted-foreground bg-muted",
+  titleKey: "",
+  descKey: "",
+}
 
 export function RecentActivityTimeline({
   activities,
@@ -75,6 +85,12 @@ export function RecentActivityTimeline({
             {items.map((activity, i) => {
               const config = activityConfig[activity.type] || fallbackConfig
               const Icon = config.icon
+              const actTitle = config.titleKey
+                ? t(config.titleKey)
+                : activity.type
+              const actDesc = config.descKey
+                ? `${activity.user_name} ${t(config.descKey)}`
+                : activity.user_name
               return (
                 <div key={i} className="flex items-start gap-3">
                   <div
@@ -86,14 +102,12 @@ export function RecentActivityTimeline({
                     <Icon className="size-4" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {activity.title}
-                    </p>
+                    <p className="text-sm font-medium truncate">{actTitle}</p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {activity.description}
+                      {actDesc}
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {formatDistanceToNow(new Date(activity.inserted_at), {
+                      {formatDistanceToNow(new Date(activity.timestamp), {
                         addSuffix: true,
                         locale: dateFnsLocale,
                       })}

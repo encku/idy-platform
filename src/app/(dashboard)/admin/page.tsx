@@ -43,14 +43,17 @@ export default function AdminDashboardPage() {
           apiClient.get<{ data: DashboardTrends }>("/api/admin/dashboard/trends"),
           apiClient.get<{ data: WeeklyStat[] }>("/api/admin/dashboard/weekly-stats"),
           apiClient.get<{ data: CardPerformance[] }>("/api/admin/dashboard/card-performance"),
-          apiClient.get<{ data: RecentActivity[] }>("/api/admin/dashboard/recent-activities"),
+          apiClient.get<{ data: { activities: RecentActivity[] } }>("/api/admin/dashboard/recent-activities"),
         ])
 
         if (results[0].status === "fulfilled") setSummary(results[0].value.data)
         if (results[1].status === "fulfilled") setTrends(results[1].value.data)
         if (results[2].status === "fulfilled") setWeeklyStats(toArray(results[2].value.data))
         if (results[3].status === "fulfilled") setCardPerformance(toArray(results[3].value.data))
-        if (results[4].status === "fulfilled") setActivities(toArray(results[4].value.data))
+        if (results[4].status === "fulfilled") {
+          const actData = results[4].value.data
+          setActivities(Array.isArray(actData?.activities) ? actData.activities : toArray(actData))
+        }
       } catch {
         // individual failures handled by allSettled
       } finally {

@@ -96,10 +96,11 @@ export interface DashboardTrends {
 
 export interface RecentActivity {
   type: string
-  title: string
-  description: string
-  user?: string
-  inserted_at: string
+  user_id: number
+  user_name: string
+  user_email: string
+  card_public_key?: string
+  timestamp: string
 }
 
 export interface WeeklyStat {
