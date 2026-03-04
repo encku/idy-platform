@@ -12,6 +12,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG GIT_COMMIT_COUNT=0
+ENV GIT_COMMIT_COUNT=${GIT_COMMIT_COUNT}
 RUN pnpm build
 
 # Stage 3: Production runner
