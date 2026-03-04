@@ -7,13 +7,12 @@ RUN pnpm install --frozen-lockfile
 
 # Stage 2: Build the application
 FROM node:22-alpine AS builder
-RUN apk add --no-cache git
 RUN corepack enable && corepack prepare pnpm@10.29.2
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN export APP_VERSION="1.0.$(git rev-list --count HEAD)+$(git rev-parse --short HEAD)" && pnpm build
+RUN export APP_VERSION=$(node -p "require('./package.json').version") && pnpm build
 
 # Stage 3: Production runner
 FROM node:22-alpine AS runner
