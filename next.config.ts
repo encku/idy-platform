@@ -5,7 +5,10 @@ import pkg from "./package.json" with { type: "json" };
 const [major, minor] = pkg.version.split(".");
 let patch = process.env.GIT_COMMIT_COUNT || "0";
 try {
-  patch = execSync("git rev-list --count HEAD", { encoding: "utf-8" }).trim();
+  patch = execSync("git rev-list --count HEAD", {
+    encoding: "utf-8",
+    cwd: process.cwd(),
+  }).trim();
 } catch {}
 
 const nextConfig: NextConfig = {
