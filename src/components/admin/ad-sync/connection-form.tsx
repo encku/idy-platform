@@ -316,7 +316,7 @@ export function ConnectionForm({ mode, connection }: ConnectionFormProps) {
             <Label>{t("conflictStrategy")}</Label>
             <Select
               value={form.conflict_strategy}
-              onValueChange={(v) => update("conflict_strategy", v)}
+              onValueChange={(v) => update("conflict_strategy", v as typeof form.conflict_strategy)}
             >
               <SelectTrigger>
                 <SelectValue />
