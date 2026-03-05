@@ -612,6 +612,7 @@ const tr: Record<string, string> = {
   regenerateToken: "Token Yenile",
   tokenCopied: "Token panoya kopyalandı",
   scimTokenWarning: "Bu token yalnızca bir kez gösterilecektir. Şimdi kopyalayın ve Azure AD Kurumsal Uygulama SCIM provizyon yapılandırmanıza yapıştırın.",
+  myAccount: "Hesabım",
 }
 
 export default tr

@@ -612,6 +612,7 @@ const en: Record<string, string> = {
   regenerateToken: "Regenerate Token",
   tokenCopied: "Token copied to clipboard",
   scimTokenWarning: "This token will only be shown once. Copy it now and paste it into your Azure AD Enterprise Application SCIM provisioning configuration.",
+  myAccount: "My Account",
 }
 
 export default en

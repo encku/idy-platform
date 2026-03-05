@@ -4,6 +4,7 @@ import { useState, createContext, useContext } from "react"
 import { usePathname } from "next/navigation"
 import { AdminSidebar } from "./admin-sidebar"
 import { PhonePreview } from "./phone-preview"
+import { BottomNav } from "@/components/dashboard/bottom-nav"
 import { Toaster } from "@/components/ui/sonner"
 
 // Context for sharing selected card across admin pages
@@ -51,6 +52,7 @@ export function AdminLayoutShell({
           ) : (
             <div className="mx-auto min-h-svh max-w-md pb-20">
               {children}
+              <BottomNav contained />
             </div>
           )}
         </main>
