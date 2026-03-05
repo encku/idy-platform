@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 import { execSync } from "child_process";
 import pkg from "./package.json" with { type: "json" };
 
-const [major, minor] = pkg.version.split(".");
-let patch = process.env.GIT_COMMIT_COUNT || "0";
+const [major, minor, patchFallback] = pkg.version.split(".");
+let patch = process.env.GIT_COMMIT_COUNT || patchFallback || "0";
 try {
   patch = execSync("git rev-list --count HEAD", {
     encoding: "utf-8",
