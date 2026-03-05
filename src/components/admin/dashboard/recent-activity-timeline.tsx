@@ -107,10 +107,12 @@ export function RecentActivityTimeline({
                       {actDesc}
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {formatDistanceToNow(new Date(activity.timestamp), {
-                        addSuffix: true,
-                        locale: dateFnsLocale,
-                      })}
+                      {new Date(activity.timestamp).getFullYear() > 1970
+                        ? formatDistanceToNow(new Date(activity.timestamp), {
+                            addSuffix: true,
+                            locale: dateFnsLocale,
+                          })
+                        : "-"}
                     </p>
                   </div>
                 </div>
