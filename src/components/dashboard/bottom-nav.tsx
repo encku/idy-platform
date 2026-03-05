@@ -18,7 +18,7 @@ const tabs = [
   { href: "/settings", icon: Settings, labelKey: "settings" },
 ] as const
 
-export function BottomNav({ contained }: { contained?: boolean } = {}) {
+export function BottomNav() {
   const pathname = usePathname()
   const { t } = useTranslation()
   const { hasFeature } = useFeatures()
@@ -26,7 +26,7 @@ export function BottomNav({ contained }: { contained?: boolean } = {}) {
 
   return (
     <>
-      <nav className={`${contained ? "sticky bottom-0" : "fixed bottom-0 left-0 right-0"} z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60`}>
+      <nav className="sticky bottom-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-16 max-w-md items-center justify-around">
           {tabs.map((tab) => {
             const isActive =

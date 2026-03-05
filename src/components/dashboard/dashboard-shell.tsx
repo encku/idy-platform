@@ -30,8 +30,8 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="mx-auto min-h-svh max-w-md pb-20">
-      {children}
+    <div className="flex flex-col min-h-svh mx-auto max-w-md">
+      <div className="flex-1">{children}</div>
       <BottomNav />
       <Toaster position="top-center" />
     </div>

@@ -50,9 +50,9 @@ export function AdminLayoutShell({
           {isAdminRoute ? (
             <div className="p-6 max-w-6xl">{children}</div>
           ) : (
-            <div className="mx-auto min-h-svh max-w-md pb-20">
-              {children}
-              <BottomNav contained />
+            <div className="flex flex-col min-h-full mx-auto max-w-md">
+              <div className="flex-1">{children}</div>
+              <BottomNav />
             </div>
           )}
         </main>
