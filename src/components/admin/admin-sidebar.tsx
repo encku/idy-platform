@@ -19,6 +19,8 @@ import {
   Eye,
   Crown,
   FolderSync,
+  User,
+  Settings,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -130,6 +132,47 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
         <p className="text-center text-[10px] text-sidebar-foreground/30 py-1">
           v{process.env.NEXT_PUBLIC_APP_VERSION}
         </p>
+
+        {/* My Profile & Settings */}
+        <div className="border-t px-2 py-2">
+          <nav className="flex flex-col gap-1">
+            {[
+              { href: "/", icon: User, labelKey: "editProfile" },
+              { href: "/settings", icon: Settings, labelKey: "settings" },
+            ].map((item) => {
+              const isActive = pathname === item.href
+              const link = (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+                    collapsed && "justify-center px-0",
+                    isActive
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  )}
+                >
+                  <item.icon className="size-4 shrink-0" />
+                  {!collapsed && <span>{t(item.labelKey)}</span>}
+                </Link>
+              )
+
+              if (collapsed) {
+                return (
+                  <Tooltip key={item.href}>
+                    <TooltipTrigger asChild>{link}</TooltipTrigger>
+                    <TooltipContent side="right">
+                      {t(item.labelKey)}
+                    </TooltipContent>
+                  </Tooltip>
+                )
+              }
+
+              return link
+            })}
+          </nav>
+        </div>
 
         {/* User info */}
         <div className="border-t p-3">

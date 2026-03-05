@@ -49,13 +49,8 @@ export function AdminLayoutShell({
           {isAdminRoute ? (
             <div className="p-6 max-w-6xl">{children}</div>
           ) : (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center text-muted-foreground space-y-2">
-                <p className="text-lg font-medium">Admin Dashboard</p>
-                <p className="text-sm">
-                  Sol menuden bir bolum secin
-                </p>
-              </div>
+            <div className="mx-auto min-h-svh max-w-md pb-20">
+              {children}
             </div>
           )}
         </main>
