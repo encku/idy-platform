@@ -133,8 +133,7 @@ function LoginForm() {
         const remaining = data.backup_codes_remaining
         if (remaining <= 3) {
           setBackupWarning(
-            t("backupCodesLowWarning", { count: remaining }) ||
-            `Warning: You have only ${remaining} backup code(s) remaining. Please regenerate your backup codes in Settings.`
+            `${t("backupCodesLowWarning")} (${remaining})`
           )
           // Wait briefly so user can see the warning
           await new Promise((resolve) => setTimeout(resolve, 3000))
