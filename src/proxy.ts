@@ -14,6 +14,17 @@ const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/reset-passwo
 // Admin routes that require authentication
 const ADMIN_ROUTES = ["/", "/dashboard", "/settings", "/users"]
 
+const BOT_USER_AGENTS = [
+  "googlebot", "bingbot", "slurp", "duckduckbot", "baiduspider",
+  "yandexbot", "sogou", "exabot", "facebot", "facebookexternalhit",
+  "ia_archiver", "alexa", "msnbot", "semrushbot", "ahrefsbot",
+  "dotbot", "petalbot", "mj12bot", "bytespider", "gptbot",
+  "claudebot", "anthropic-ai", "ccbot", "chatgpt-user", "applebot",
+  "twitterbot", "linkedinbot", "whatsapp", "telegrambot", "discordbot",
+  "slackbot", "scrapy", "httpclient", "python-requests", "curl",
+  "wget", "go-http-client", "java", "headlesschrome", "phantomjs",
+]
+
 const KNOWN_ROUTES = [
   "login", "register", "forgot-password", "reset-password", "verify-email",
   "api", "_next", "dashboard", "settings", "users",
@@ -30,8 +41,21 @@ function isCardRoute(pathname: string): boolean {
   return !KNOWN_ROUTES.includes(segments[0])
 }
 
+function isBot(userAgent: string): boolean {
+  const ua = userAgent.toLowerCase()
+  return BOT_USER_AGENTS.some((bot) => ua.includes(bot))
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Block bots on card routes
+  if (isCardRoute(pathname)) {
+    const userAgent = request.headers.get("user-agent") || ""
+    if (isBot(userAgent)) {
+      return new NextResponse("Not Found", { status: 404 })
+    }
+  }
 
   // Skip public API routes
   if (
