@@ -121,7 +121,7 @@ export function FieldForm({
   return (
     <div className="space-y-4">
       {/* Custom Icon */}
-      {!isFile && (
+      {(
         <div className="flex items-center gap-4">
           <div className="relative">
             <button
