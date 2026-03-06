@@ -13,6 +13,7 @@ import {
   Crown,
   MailWarning,
   Loader2,
+  ShieldCheck,
 } from "lucide-react"
 import { AppHeader } from "@/components/dashboard/app-header"
 import { PremiumBadge } from "@/components/premium/premium-badge"
@@ -45,15 +46,26 @@ export default function SettingsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [sendingVerification, setSendingVerification] = useState(false)
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
 
   useEffect(() => {
     async function load() {
       try {
         const res = await apiClient.get<{
-          data: { is_hidden: boolean; email_verified: boolean }
+          data: { is_hidden: boolean; email_verified: boolean; auth_provider?: string }
         }>("/api/user")
         setIsHidden(res.data.is_hidden)
         setEmailVerified(res.data.email_verified)
+
+        // Fetch 2FA status (skip for SSO users)
+        if (!res.data.auth_provider || res.data.auth_provider === "local") {
+          try {
+            const tfRes = await apiClient.get<{ data: { is_enabled: boolean } }>("/api/user/2fa/status")
+            setTwoFactorEnabled(tfRes.data.is_enabled)
+          } catch {
+            // 2FA status fetch failed, ignore
+          }
+        }
       } catch {
         // handled
       } finally {
@@ -184,6 +196,27 @@ export default function SettingsPage() {
                 {t("changePassword")}
               </span>
               <ChevronRight className="size-4 text-muted-foreground" />
+            </button>
+          )}
+
+          {/* Two-Factor Authentication */}
+          {canEdit && (
+            <button
+              onClick={() => router.push("/settings/two-factor")}
+              className="flex w-full items-center gap-3 rounded-xl bg-muted/50 p-4 transition-colors hover:bg-muted"
+            >
+              <ShieldCheck className="size-5 text-muted-foreground" />
+              <span className="flex-1 text-sm font-medium text-left">
+                {t("twoFactorAuth")}
+              </span>
+              <div className="flex items-center gap-2">
+                {twoFactorEnabled && (
+                  <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-600">
+                    {t("enabled")}
+                  </span>
+                )}
+                <ChevronRight className="size-4 text-muted-foreground" />
+              </div>
             </button>
           )}
 

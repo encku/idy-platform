@@ -5,36 +5,35 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json()
+    const body = await request.json()
+    const challenge_token = typeof body.challenge_token === "string" ? body.challenge_token.trim() : ""
+    const code = typeof body.code === "string" ? body.code.trim() : ""
 
-    // Step 1: Login — get user + refresh token
-    const loginRes = await fetch(`${API_URL}/user/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
-
-    if (!loginRes.ok) {
-      const err = await loginRes.json().catch(() => null)
+    if (!challenge_token || !code) {
       return NextResponse.json(
-        { error: err?.error || err?.message || "Invalid email or password" },
-        { status: loginRes.status }
+        { error: "Missing challenge_token or code" },
+        { status: 400 }
       )
     }
 
-    const loginData = await loginRes.json()
+    // Step 1: Verify 2FA code with backend
+    const verifyRes = await fetch(`${API_URL}/user/2fa/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ challenge_token, code }),
+    })
 
-    // Check if 2FA is required
-    if (loginData.data?.two_factor_required) {
-      return NextResponse.json({
-        two_factor_required: true,
-        challenge_token: loginData.data.challenge_token,
-        method: loginData.data.method,
-      })
+    if (!verifyRes.ok) {
+      const err = await verifyRes.json().catch(() => null)
+      return NextResponse.json(
+        { error: err?.error || "Verification failed" },
+        { status: verifyRes.status }
+      )
     }
 
-    const refreshToken = loginData.data.refresh_token.token
-    const user = loginData.data.user
+    const verifyData = await verifyRes.json()
+    const refreshToken = verifyData.data.refresh_token.token
+    const user = verifyData.data.user
 
     // Step 2: Exchange refresh token for access token (JWT)
     const tokenRes = await fetch(`${API_URL}/user/token`, {
@@ -53,10 +52,12 @@ export async function POST(request: NextRequest) {
     const tokenData = await tokenRes.json()
     const accessToken = tokenData.data.token
 
-    // Step 3: Set HTTP-only cookies and return success
+    // Step 3: Set cookies and return
     const response = NextResponse.json({
       success: true,
       user: { id: user.id, name: user.name, email: user.email, email_verified: user.email_verified },
+      backup_code_used: verifyData.data.backup_code_used || false,
+      backup_codes_remaining: verifyData.data.backup_codes_remaining,
     })
 
     setAuthCookies(response, accessToken, refreshToken, {
@@ -68,9 +69,9 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (err) {
-    console.error("[login] error:", err)
+    console.error("[2fa/verify] error:", err)
     return NextResponse.json(
-      { error: "Login failed" },
+      { error: "Verification failed" },
       { status: 500 }
     )
   }

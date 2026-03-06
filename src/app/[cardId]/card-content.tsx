@@ -52,13 +52,153 @@ export function CardContent({
     }
   }
 
+  function isAndroid() {
+    return /Android/i.test(navigator.userAgent)
+  }
+
+  function isIOS() {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent)
+  }
+
+  /**
+   * Platform prefix'ten Android intent:// URL'si üretir.
+   * S.browser_fallback_url sayesinde uygulama yüklü değilse tarayıcı web URL'ye gider.
+   */
+  function getAndroidIntentUrl(prefix: string, data: string, fallbackUrl: string): string | null {
+    const p = prefix.toLowerCase()
+    const fb = encodeURIComponent(fallbackUrl)
+
+    // Instagram — doğru format: /_u/ değil, direkt /{username}
+    if (p.includes("instagram.com")) {
+      return `intent://instagram.com/${data}#Intent;scheme=https;package=com.instagram.android;S.browser_fallback_url=${fb};end`
+    }
+    // LinkedIn — /in/ prefix'i backend'den geldiği için path prefix'i direkt data'ya bırak
+    if (p.includes("linkedin.com/in/")) {
+      return `intent://linkedin.com/in/${data}#Intent;scheme=https;package=com.linkedin.android;S.browser_fallback_url=${fb};end`
+    }
+    if (p.includes("linkedin.com/company/")) {
+      return `intent://linkedin.com/company/${data}#Intent;scheme=https;package=com.linkedin.android;S.browser_fallback_url=${fb};end`
+    }
+    if (p.includes("linkedin.com")) {
+      return `intent://linkedin.com/${data}#Intent;scheme=https;package=com.linkedin.android;S.browser_fallback_url=${fb};end`
+    }
+    // Twitter/X — com.twitter.android paketi X'e geçişten sonra değişmedi
+    if (p.includes("twitter.com") || p.includes("x.com")) {
+      return `intent://twitter.com/${data}#Intent;scheme=https;package=com.twitter.android;S.browser_fallback_url=${fb};end`
+    }
+    // Facebook
+    if (p.includes("facebook.com")) {
+      return `intent://facebook.com/${data}#Intent;scheme=https;package=com.facebook.katana;S.browser_fallback_url=${fb};end`
+    }
+    // TikTok — data'da @ olabilir, önce temizle, sonra ekle
+    if (p.includes("tiktok.com")) {
+      const tiktokUser = data.startsWith("@") ? data.slice(1) : data
+      return `intent://tiktok.com/@${tiktokUser}#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=${fb};end`
+    }
+    // YouTube — prefix'ten path tipini belirle (@handle vs channel ID)
+    if (p.includes("youtube.com") || p.includes("youtu.be")) {
+      let ytPath: string
+      if (p.includes("/@") || data.startsWith("@")) {
+        // @handle formatı
+        ytPath = data.startsWith("@") ? data : `@${data}`
+      } else if (p.includes("/channel/")) {
+        ytPath = `channel/${data}`
+      } else if (p.includes("/c/")) {
+        ytPath = `c/${data}`
+      } else {
+        ytPath = data
+      }
+      return `intent://youtube.com/${ytPath}#Intent;scheme=https;package=com.google.android.youtube;S.browser_fallback_url=${fb};end`
+    }
+    // WhatsApp — telefon numarasını encode et (+ gibi karakterler için)
+    if (p.includes("wa.me") || p.includes("whatsapp.com")) {
+      return `intent://send?phone=${encodeURIComponent(data)}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=${fb};end`
+    }
+    // Telegram
+    if (p.includes("t.me") || p.includes("telegram")) {
+      return `intent://resolve?domain=${data}#Intent;scheme=tg;package=org.telegram.messenger;S.browser_fallback_url=${fb};end`
+    }
+    // Snapchat
+    if (p.includes("snapchat.com")) {
+      return `intent://www.snapchat.com/add/${data}#Intent;scheme=https;package=com.snapchat.android;S.browser_fallback_url=${fb};end`
+    }
+    // Pinterest
+    if (p.includes("pinterest.com")) {
+      return `intent://pinterest.com/${data}#Intent;scheme=https;package=com.pinterest;S.browser_fallback_url=${fb};end`
+    }
+    // Spotify — host open.spotify.com, /user/ path'i Spotify'nın deep link formatı
+    if (p.includes("spotify.com")) {
+      return `intent://open.spotify.com/user/${data}#Intent;scheme=https;package=com.spotify.music;S.browser_fallback_url=${fb};end`
+    }
+    // Threads
+    if (p.includes("threads.net")) {
+      const threadsUser = data.startsWith("@") ? data.slice(1) : data
+      return `intent://threads.net/@${threadsUser}#Intent;scheme=https;package=com.instagram.barcelona;S.browser_fallback_url=${fb};end`
+    }
+
+    return null
+  }
+
+  /**
+   * Platform prefix'ten iOS custom URL scheme üretir.
+   * Instagram, Twitter, LinkedIn vb. → iOS Universal Links (https://) yerel uygulamayı zaten açar.
+   * Yalnızca Universal Link kullanmayan WhatsApp ve Telegram için custom scheme gerekir.
+   */
+  function getIOSDeepLinkUrl(prefix: string, data: string): string | null {
+    const p = prefix.toLowerCase()
+
+    if (p.includes("wa.me") || p.includes("whatsapp.com")) {
+      return `whatsapp://send?phone=${encodeURIComponent(data)}`
+    }
+    if (p.includes("t.me") || p.includes("telegram")) {
+      return `tg://resolve?domain=${data}`
+    }
+
+    return null
+  }
+
+  function openDeepLink(field: CardField) {
+    const fallbackUrl = getFieldUrl(field)
+    const prefix = field.prefix || ""
+    const data = field.data || ""
+
+    if (isAndroid()) {
+      const intentUrl = getAndroidIntentUrl(prefix, data, fallbackUrl)
+      if (intentUrl) {
+        window.location.href = intentUrl
+        return
+      }
+    }
+
+    if (isIOS()) {
+      const customScheme = getIOSDeepLinkUrl(prefix, data)
+      if (customScheme) {
+        // visibilitychange: sayfa gizlenirse (uygulama açıldı) timer'ı iptal et
+        // pagehide iOS Safari'de güvenilir değil — custom scheme'de tetiklenmeyebilir
+        const fallbackTimer = setTimeout(() => {
+          window.open(fallbackUrl, "_blank", "noopener,noreferrer")
+        }, 2000)
+
+        const clearTimer = () => {
+          if (document.hidden) clearTimeout(fallbackTimer)
+        }
+        document.addEventListener("visibilitychange", clearTimer, { once: true })
+        window.location.href = customScheme
+        return
+      }
+    }
+
+    // Masaüstü veya tanınmayan platform — standart yeni sekme
+    window.open(fallbackUrl, "_blank", "noopener,noreferrer")
+  }
+
   async function handleFieldClick(field: CardField) {
     const url = getFieldUrl(field)
     if (url) {
       if (isPdfUrl(url)) {
         setPdfUrl(url)
       } else {
-        window.open(url, "_blank", "noopener,noreferrer")
+        openDeepLink(field)
       }
     }
 

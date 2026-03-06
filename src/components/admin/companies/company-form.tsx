@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { apiClient } from "@/lib/api-client"
 import { useTranslation } from "@/lib/i18n/context"
 import { toast } from "sonner"
@@ -24,6 +25,7 @@ export function CompanyForm({ mode, company }: CompanyFormProps) {
     name: company?.name || "",
     country: company?.country || "",
     address: company?.address || "",
+    allow_email_2fa: company?.allow_email_2fa || false,
   })
 
   function update(field: string, value: string) {
@@ -81,6 +83,16 @@ export function CompanyForm({ mode, company }: CompanyFormProps) {
             <Input
               value={form.address}
               onChange={(e) => update("address", e.target.value)}
+            />
+          </div>
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div>
+              <Label>{t("allowEmail2FA")}</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">{t("allowEmail2FADescription")}</p>
+            </div>
+            <Switch
+              checked={form.allow_email_2fa}
+              onCheckedChange={(checked) => setForm((prev) => ({ ...prev, allow_email_2fa: checked }))}
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">

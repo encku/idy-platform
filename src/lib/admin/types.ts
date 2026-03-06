@@ -151,6 +151,7 @@ export interface Company {
   address?: string
   logo_url?: string
   inserted_at: string
+  allow_email_2fa?: boolean
 }
 
 export interface CompanyDetail extends Company {
