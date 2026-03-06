@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { Upload, Loader2, ExternalLink } from "lucide-react"
+import { Upload, Loader2, ExternalLink, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,6 +16,7 @@ interface FieldFormProps {
   data: string
   formattedData: Record<string, string>
   customIconUrl?: string
+  onCustomIconRemove?: () => void
   onNameChange: (name: string) => void
   onDataChange: (data: string) => void
   onFormattedDataChange: (data: Record<string, string>) => void
@@ -34,6 +35,7 @@ export function FieldForm({
   data,
   formattedData,
   customIconUrl,
+  onCustomIconRemove,
   onNameChange,
   onDataChange,
   onFormattedDataChange,
@@ -113,6 +115,7 @@ export function FieldForm({
       ? `${fieldType.prefix}${data}${fieldType.postfix || ""}`
       : null
 
+  const hasCustomIcon = !!(iconPreview || customIconUrl)
   const currentIcon = iconPreview || customIconUrl || fieldType.icon_url
 
   return (
@@ -120,19 +123,35 @@ export function FieldForm({
       {/* Custom Icon */}
       {!isFile && (
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => iconInputRef.current?.click()}
-            className="group relative size-14 shrink-0 overflow-hidden rounded-xl bg-muted"
-          >
-            <img
-              src={currentIcon}
-              alt={t(fieldType.name)}
-              className="size-full object-contain p-1"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Upload className="size-4 text-white" />
-            </div>
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => iconInputRef.current?.click()}
+              className="group relative size-14 shrink-0 overflow-hidden rounded-xl bg-muted"
+            >
+              <img
+                src={currentIcon}
+                alt={t(fieldType.name)}
+                className="size-full object-contain p-1"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Upload className="size-4 text-white" />
+              </div>
+            </button>
+            {hasCustomIcon && onCustomIconRemove && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIconPreview("")
+                  if (iconInputRef.current) iconInputRef.current.value = ""
+                  onCustomIconRemove()
+                }}
+                className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-destructive text-white shadow-sm hover:bg-destructive/90 transition-colors"
+              >
+                <X className="size-3" />
+              </button>
+            )}
+          </div>
           <input
             ref={iconInputRef}
             type="file"

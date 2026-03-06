@@ -48,6 +48,7 @@ export default function EditFieldPage() {
   const [file, setFile] = useState<File | null>(null)
   const [customIcon, setCustomIcon] = useState<File | null>(null)
   const [customIconUrl, setCustomIconUrl] = useState("")
+  const [clearCustomIcon, setClearCustomIcon] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -106,6 +107,10 @@ export default function EditFieldPage() {
         formData.append("file", file)
       } else {
         formData.append("data", data)
+      }
+
+      if (clearCustomIcon && !customIcon) {
+        formData.append("clear_custom_icon", "true")
       }
 
       if (customIcon) {
@@ -169,7 +174,15 @@ export default function EditFieldPage() {
           onDataChange={setData}
           onFormattedDataChange={setFormattedData}
           onFileChange={setFile}
-          onCustomIconChange={setCustomIcon}
+          onCustomIconChange={(file) => {
+            setCustomIcon(file)
+            if (file) setClearCustomIcon(false)
+          }}
+          onCustomIconRemove={() => {
+            setCustomIcon(null)
+            setCustomIconUrl("")
+            setClearCustomIcon(true)
+          }}
           onSubmit={handleSubmit}
           saving={saving}
           error={error}
