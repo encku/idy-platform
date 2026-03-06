@@ -18,6 +18,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel"
 import { apiClient } from "@/lib/api-client"
 import { useTranslation } from "@/lib/i18n/context"
 import { useAuth } from "@/lib/auth/context"
@@ -38,6 +44,7 @@ export default function MyCardsPage() {
   const [loading, setLoading] = useState(true)
   const [cards, setCards] = useState<CardItem[]>([])
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>()
 
   const [qrOpen, setQrOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
@@ -58,6 +65,13 @@ export default function MyCardsPage() {
   useEffect(() => {
     loadCards()
   }, [loadCards])
+
+  useEffect(() => {
+    if (!carouselApi) return
+    carouselApi.on("select", () => {
+      setSelectedIndex(carouselApi.selectedScrollSnap())
+    })
+  }, [carouselApi])
 
   const selectedCard = cards[selectedIndex]
   const shareUrl = selectedCard
@@ -115,41 +129,45 @@ export default function MyCardsPage() {
           </div>
         ) : (
           <>
-            {/* Circular Card Selector */}
-            <div className="flex items-center justify-center gap-4 py-6 overflow-x-auto scrollbar-hide">
-              {cards.map((card, i) => (
-                <button
-                  key={card.id}
-                  onClick={() => setSelectedIndex(i)}
-                  className={`flex flex-col items-center gap-2 shrink-0 transition-all duration-200 ${
-                    i === selectedIndex ? "scale-110" : "opacity-50 scale-90"
-                  }`}
-                >
+            {/* Card Carousel */}
+            <Carousel
+              setApi={setCarouselApi}
+              opts={{ align: "center", loop: true }}
+              className="w-full"
+            >
+              <CarouselContent>
+                {cards.map((card) => (
+                  <CarouselItem key={card.id}>
+                    <div className="flex flex-col items-center py-4">
+                      <img
+                        src={getCardImage(card.card_type_id, card.color_id)}
+                        alt={card.user_preferred_name || card.public_key}
+                        className="h-48 max-w-[300px] object-contain"
+                      />
+                      <p className="mt-3 text-sm font-medium truncate max-w-[200px]">
+                        {card.user_preferred_name || card.public_key}
+                      </p>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+
+            {/* Dots indicator */}
+            {cards.length > 1 && (
+              <div className="flex justify-center gap-1.5 mt-2">
+                {cards.map((_, i) => (
                   <div
-                    className={`size-20 rounded-full overflow-hidden border-3 transition-colors ${
+                    key={i}
+                    className={`size-2 rounded-full transition-colors ${
                       i === selectedIndex
-                        ? "border-primary shadow-lg"
-                        : "border-muted"
+                        ? "bg-foreground"
+                        : "bg-muted-foreground/30"
                     }`}
-                  >
-                    <img
-                      src={getCardImage(card.card_type_id, card.color_id)}
-                      alt={card.user_preferred_name || card.public_key}
-                      className="size-full object-cover"
-                    />
-                  </div>
-                  <p
-                    className={`text-xs font-medium truncate max-w-[80px] transition-colors ${
-                      i === selectedIndex
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {card.user_preferred_name || card.public_key}
-                  </p>
-                </button>
-              ))}
-            </div>
+                  />
+                ))}
+              </div>
+            )}
 
             {/* Card Actions - 2x2 grid */}
             <div className="grid grid-cols-2 gap-3 mt-6">
