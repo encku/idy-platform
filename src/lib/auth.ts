@@ -38,7 +38,7 @@ export function setAuthCookies(
     refreshToken,
     tokenCookieOptions(REFRESH_TOKEN_MAX_AGE)
   )
-  response.cookies.set(USER_COOKIE, btoa(JSON.stringify(user)), {
+  response.cookies.set(USER_COOKIE, Buffer.from(JSON.stringify(user)).toString("base64"), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,

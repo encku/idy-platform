@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const payload = JSON.parse(atob(accessToken.split(".")[1]))
-    const user = JSON.parse(atob(userCookie))
+    const user = JSON.parse(Buffer.from(userCookie, "base64").toString("utf-8"))
 
     return NextResponse.json({
       authenticated: true,

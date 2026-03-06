@@ -34,9 +34,9 @@ export async function POST(request: NextRequest) {
   const userCookie = request.cookies.get(USER_COOKIE)?.value
   if (userCookie) {
     try {
-      const user = JSON.parse(atob(userCookie))
+      const user = JSON.parse(Buffer.from(userCookie, "base64").toString("utf-8"))
       user.email_verified = true
-      response.cookies.set(USER_COOKIE, btoa(JSON.stringify(user)), {
+      response.cookies.set(USER_COOKIE, Buffer.from(JSON.stringify(user)).toString("base64"), {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
