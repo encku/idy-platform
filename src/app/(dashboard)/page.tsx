@@ -15,6 +15,7 @@ import { apiClient } from "@/lib/api-client"
 import { useAuth } from "@/lib/auth/context"
 import { useTranslation } from "@/lib/i18n/context"
 import type { User } from "@/lib/types"
+import { getCardImage } from "@/lib/card-images"
 
 interface CardListItem {
   id: number
@@ -328,7 +329,11 @@ export default function ProfilePage() {
                       : "hover:bg-muted/50"
                   }`}
                 >
-                  <div className="size-12 rounded-lg bg-foreground/10" />
+                  <img
+                    src={getCardImage(c.card_type_id, c.color_id)}
+                    alt={c.user_preferred_name || c.public_key}
+                    className="h-12 w-auto rounded-lg object-contain"
+                  />
                   <span className="max-w-[80px] truncate">
                     {c.user_preferred_name || c.public_key}
                   </span>
