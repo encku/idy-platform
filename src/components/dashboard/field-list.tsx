@@ -16,7 +16,6 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable"
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers"
-import { AnimatePresence, motion } from "framer-motion"
 import { FieldListItem } from "./field-list-item"
 import { apiClient } from "@/lib/api-client"
 import { useRouter } from "next/navigation"
@@ -140,32 +139,25 @@ export function FieldList({
           items={fields.map((f) => f.id)}
           strategy={verticalListSortingStrategy}
         >
-          <AnimatePresence initial={false}>
-            {fields.map((field) => (
-              <motion.div
-                key={field.id}
-                layout
-                exit={{ x: -400, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <FieldListItem
-                  id={field.id}
-                  name={field.name}
-                  icon={field.icon}
-                  isActive={field.isActive}
-                  cardId={cardId}
-                  isDirect={isDirect}
-                  disableSwitch={!canSwitch(field)}
-                  readOnly={readOnly}
-                  onClick={readOnly ? undefined : () =>
-                    router.push(`/card/${cardId}/edit/${field.id}`)
-                  }
-                  onActiveChange={handleActiveChange}
-                  onDelete={readOnly ? undefined : handleDeleteRequest}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          {fields.map((field) => (
+            <div key={field.id}>
+              <FieldListItem
+                id={field.id}
+                name={field.name}
+                icon={field.icon}
+                isActive={field.isActive}
+                cardId={cardId}
+                isDirect={isDirect}
+                disableSwitch={!canSwitch(field)}
+                readOnly={readOnly}
+                onClick={readOnly ? undefined : () =>
+                  router.push(`/card/${cardId}/edit/${field.id}`)
+                }
+                onActiveChange={handleActiveChange}
+                onDelete={readOnly ? undefined : handleDeleteRequest}
+              />
+            </div>
+          ))}
         </SortableContext>
       </DndContext>
 

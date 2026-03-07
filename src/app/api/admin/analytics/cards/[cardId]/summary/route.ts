@@ -6,5 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ cardId: string }> }
 ) {
   const { cardId } = await params
-  return proxyRequest(request, `/analytics/card/${cardId}/summary`)
+  return proxyRequest(request, `/analytics/card/${cardId}/summary`, {
+    cacheControl: "private, max-age=60, stale-while-revalidate=120",
+  })
 }

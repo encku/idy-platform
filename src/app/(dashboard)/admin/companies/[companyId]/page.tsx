@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { Pencil } from "lucide-react"
+import { Pencil, Settings } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -10,12 +10,15 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { CompanyDetailCard } from "@/components/admin/companies/company-detail-card"
 import { CompanyCardsTab } from "@/components/admin/companies/company-cards-tab"
 import { CompanyUsersTab } from "@/components/admin/companies/company-users-tab"
+import { CompanyFeaturesTab } from "@/components/admin/companies/company-features-tab"
 import { apiClient } from "@/lib/api-client"
 import { useTranslation } from "@/lib/i18n/context"
+import { useAuth } from "@/lib/auth/context"
 import type { CompanyDetail } from "@/lib/admin/types"
 
 export default function CompanyDetailPage() {
   const { t } = useTranslation()
+  const { role } = useAuth()
   const params = useParams<{ companyId: string }>()
   const router = useRouter()
   const [company, setCompany] = useState<CompanyDetail | null>(null)
@@ -75,6 +78,12 @@ export default function CompanyDetailPage() {
         <TabsList>
           <TabsTrigger value="cards">{t("assignedCards")}</TabsTrigger>
           <TabsTrigger value="users">{t("assignedUsers")}</TabsTrigger>
+          {role === "admin" && (
+            <TabsTrigger value="features">
+              <Settings className="size-4 mr-2" />
+              {t("companyFeatures")}
+            </TabsTrigger>
+          )}
         </TabsList>
         <TabsContent value="cards" className="mt-4">
           <CompanyCardsTab companyId={params.companyId} />
@@ -82,6 +91,11 @@ export default function CompanyDetailPage() {
         <TabsContent value="users" className="mt-4">
           <CompanyUsersTab companyId={params.companyId} />
         </TabsContent>
+        {role === "admin" && (
+          <TabsContent value="features" className="mt-4">
+            <CompanyFeaturesTab companyId={params.companyId} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )

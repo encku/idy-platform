@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { useTranslation } from "@/lib/i18n/context"
 import type { AdminCardField } from "@/lib/admin/types"
@@ -46,9 +47,11 @@ export function CardFieldsList({ fields }: CardFieldsListProps) {
               <TableCell>
                 <div className="flex items-center gap-2">
                   {field.field_type.icon_url && (
-                    <img
+                    <Image
                       src={field.field_type.icon_url}
                       alt=""
+                      width={16}
+                      height={16}
                       className="size-4"
                     />
                   )}

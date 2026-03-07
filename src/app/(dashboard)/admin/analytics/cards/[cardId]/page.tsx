@@ -1,15 +1,26 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
+import dynamic from "next/dynamic"
 import { useParams } from "next/navigation"
 import { format, subDays } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { DateRangePicker } from "@/components/admin/analytics/date-range-picker"
-import { ViewsOverTimeChart } from "@/components/admin/analytics/views-over-time-chart"
-import { FieldClicksChart } from "@/components/admin/analytics/field-clicks-chart"
-import { ShareMethodsChart } from "@/components/admin/analytics/share-methods-chart"
 import { ExportButton } from "@/components/admin/analytics/export-button"
+
+const ViewsOverTimeChart = dynamic(
+  () => import("@/components/admin/analytics/views-over-time-chart").then((m) => ({ default: m.ViewsOverTimeChart })),
+  { ssr: false, loading: () => <Skeleton className="h-64 w-full rounded-lg" /> }
+)
+const FieldClicksChart = dynamic(
+  () => import("@/components/admin/analytics/field-clicks-chart").then((m) => ({ default: m.FieldClicksChart })),
+  { ssr: false, loading: () => <Skeleton className="h-64 w-full rounded-lg" /> }
+)
+const ShareMethodsChart = dynamic(
+  () => import("@/components/admin/analytics/share-methods-chart").then((m) => ({ default: m.ShareMethodsChart })),
+  { ssr: false, loading: () => <Skeleton className="h-64 w-full rounded-lg" /> }
+)
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Eye, MousePointerClick, Share2 } from "lucide-react"
 import { apiClient } from "@/lib/api-client"

@@ -11,5 +11,7 @@ export async function GET(
   if (search.get("start_date")) query.set("start_date", search.get("start_date")!)
   if (search.get("end_date")) query.set("end_date", search.get("end_date")!)
   const qs = query.toString()
-  return proxyRequest(request, `/analytics/card/${cardId}/by-date${qs ? `?${qs}` : ""}`)
+  return proxyRequest(request, `/analytics/card/${cardId}/by-date${qs ? `?${qs}` : ""}`, {
+    cacheControl: "private, max-age=60, stale-while-revalidate=120",
+  })
 }

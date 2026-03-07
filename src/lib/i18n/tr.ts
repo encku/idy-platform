@@ -197,6 +197,7 @@ const tr: Record<string, string> = {
   passwordUpdated: "Şifre güncellendi",
   passwordMinLength: "Şifre en az 6 karakter olmalıdır",
   saving: "Kaydediliyor...",
+  loading: "Yükleniyor...",
   saved: "Kaydedildi",
   errorOccurred: "Bir hata oluştu",
   noResults: "Sonuç bulunamadı",
@@ -232,6 +233,7 @@ const tr: Record<string, string> = {
   visibilityUpdated: "Görünürlük güncellendi",
   back: "Geri",
   create: "Oluştur",
+  createdAt: "Oluşturulma Tarihi",
   edit: "Düzenle",
   noCards: "Henüz kart bulunmuyor",
   searchPlaceholder: "Ara...",
@@ -665,6 +667,42 @@ const tr: Record<string, string> = {
   enabled: "Etkin",
   done: "Tamam",
   copied: "Panoya kopyalandı",
+
+  // Company Features
+  companyFeatures: "Özellikler",
+  companyFeaturesDesc: "Bu şirket için özellikleri etkinleştirin veya devre dışı bırakın",
+  featureADSync: "AD Senkronizasyon",
+  featureADSyncDesc: "Active Directory entegrasyonu ve kullanıcı senkronizasyonu",
+  featureEnabled: "Etkin",
+  featureDisabled: "Devre Dışı",
+  featureUpdateSuccess: "Şirket özellikleri güncellendi",
+  featureNotAvailable: "Bu özellik şirketiniz için kullanılamıyor",
+
+  // Sync Preview
+  syncPreviewTitle: "Senkronizasyon Önizleme",
+  syncPreviewDesc: "Senkronizasyonu başlatmadan önce değişiklikleri inceleyin",
+  syncPreviewCreate: "Oluşturulacak",
+  syncPreviewUpdate: "Güncellenecek",
+  syncPreviewDeactivate: "Devre Dışı Bırakılacak",
+  syncPreviewSkip: "Atlanacak",
+  syncPreviewTotalUsers: "Toplam AD Kullanıcı",
+  syncPreviewAction: "İşlem",
+  syncPreviewConfirm: "Senkronizasyonu Başlat",
+  syncPreviewNoChanges: "Değişiklik tespit edilmedi",
+  syncPreviewLoading: "Dizinden önizleme getiriliyor...",
+
+  // Sync Log Detail
+  syncLogDetail: "Senkronizasyon Log Detayı",
+  syncLogDuration: "Süre",
+  syncLogStarted: "Başlangıç",
+  syncLogCompleted: "Bitiş",
+  syncLogErrorMessage: "Hata Mesajı",
+  fieldChanges: "Alan Değişiklikleri",
+  oldValue: "Eski Değer",
+  newValue: "Yeni Değer",
+  changeSource: "Kaynak",
+  applied: "Uygulandı",
+  noFieldChanges: "Bu senkronizasyon için alan değişikliği kaydedilmedi",
 }
 
 export default tr

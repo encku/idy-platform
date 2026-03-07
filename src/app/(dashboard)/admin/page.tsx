@@ -1,14 +1,22 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { Users, CreditCard, Table2, ShoppingCart, Eye } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatsCardWithTrend } from "@/components/admin/dashboard/stats-card-with-trend"
-import { WeeklyViewsChart } from "@/components/admin/dashboard/weekly-views-chart"
-import { CardPerformanceChart } from "@/components/admin/dashboard/card-performance-chart"
 import { RecentActivityTimeline } from "@/components/admin/dashboard/recent-activity-timeline"
+
+const WeeklyViewsChart = dynamic(
+  () => import("@/components/admin/dashboard/weekly-views-chart").then((m) => ({ default: m.WeeklyViewsChart })),
+  { ssr: false, loading: () => <Skeleton className="h-64 w-full rounded-lg" /> }
+)
+const CardPerformanceChart = dynamic(
+  () => import("@/components/admin/dashboard/card-performance-chart").then((m) => ({ default: m.CardPerformanceChart })),
+  { ssr: false, loading: () => <Skeleton className="h-64 w-full rounded-lg" /> }
+)
 import { apiClient } from "@/lib/api-client"
 import { useTranslation } from "@/lib/i18n/context"
 import type {

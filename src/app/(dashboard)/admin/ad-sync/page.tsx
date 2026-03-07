@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Search, Plus } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -8,11 +9,19 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { Pagination } from "@/components/admin/pagination"
 import { useTranslation } from "@/lib/i18n/context"
 import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query"
+import { useCompanyFeatures } from "@/lib/admin/company-features-context"
 import type { ADConnection } from "@/lib/admin/types"
 
 export default function ADSyncPage() {
   const { t } = useTranslation()
   const router = useRouter()
+  const { hasCompanyFeature, loading: featuresLoading } = useCompanyFeatures()
+
+  useEffect(() => {
+    if (!featuresLoading && !hasCompanyFeature("ad_sync")) {
+      router.replace("/admin")
+    }
+  }, [featuresLoading, hasCompanyFeature, router])
 
   const {
     data: connections,

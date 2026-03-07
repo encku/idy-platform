@@ -39,7 +39,7 @@ export function setAuthCookies(
     tokenCookieOptions(REFRESH_TOKEN_MAX_AGE)
   )
   response.cookies.set(USER_COOKIE, Buffer.from(JSON.stringify(user)).toString("base64"), {
-    httpOnly: true,
+    httpOnly: false,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",

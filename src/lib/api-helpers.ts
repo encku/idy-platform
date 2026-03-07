@@ -11,6 +11,7 @@ export async function proxyRequest(
     method?: string
     body?: BodyInit | null
     headers?: Record<string, string>
+    cacheControl?: string
   } = {}
 ) {
   const token = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value
@@ -42,7 +43,11 @@ export async function proxyRequest(
     data.total = data.pagination.maximum_row ?? 0
   }
 
-  return NextResponse.json(data)
+  const response = NextResponse.json(data)
+  if (options.cacheControl) {
+    response.headers.set("Cache-Control", options.cacheControl)
+  }
+  return response
 }
 
 /** Get the user ID from the JWT payload.

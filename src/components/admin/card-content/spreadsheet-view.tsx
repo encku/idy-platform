@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import Image from "next/image"
 import {
   Table,
   TableBody,
@@ -112,9 +113,11 @@ export function SpreadsheetView({
                 <TableHead key={col.name} className="min-w-[150px]">
                   <div className="flex items-center gap-2">
                     {col.iconUrl && (
-                      <img
+                      <Image
                         src={col.iconUrl}
                         alt={col.name}
+                        width={16}
+                        height={16}
                         className="size-4 object-contain"
                       />
                     )}

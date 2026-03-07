@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
+import Image from "next/image"
 import { CompanyActions } from "./company-actions"
 import { useTranslation } from "@/lib/i18n/context"
 import type { Company } from "@/lib/admin/types"
@@ -63,9 +64,11 @@ export function CompanyTable({ companies, loading, onUpdate }: CompanyTableProps
               <TableCell className="font-medium">
                 <div className="flex items-center gap-3">
                   {company.logo_url ? (
-                    <img
+                    <Image
                       src={company.logo_url}
                       alt=""
+                      width={32}
+                      height={32}
                       className="size-8 rounded object-cover"
                     />
                   ) : (

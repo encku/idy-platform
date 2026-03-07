@@ -29,7 +29,8 @@ import {
 import { GroupMappingsTab } from "./components/group-mappings-tab"
 import { SSOConfigTab } from "./components/sso-config-tab"
 import { SCIMConfigTab } from "./components/scim-config-tab"
-import type { ADConnectionDetail, ADSyncLog, ADLinkedUser } from "@/lib/admin/types"
+import { SyncPreviewDialog } from "@/components/admin/ad-sync/sync-preview-dialog"
+import type { ADConnectionDetail, ADSyncLog, ADLinkedUser, ADSyncPreview } from "@/lib/admin/types"
 
 const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   never: "outline",
@@ -51,6 +52,9 @@ export default function ConnectionDetailPage() {
   const [deleting, setDeleting] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [testing, setTesting] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  const [preview, setPreview] = useState<ADSyncPreview | null>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
 
   const {
     data: logs,
@@ -106,8 +110,27 @@ export default function ConnectionDetailPage() {
     }
   }
 
-  async function handleSync() {
+  async function handlePreviewSync() {
+    setPreviewLoading(true)
+    setPreview(null)
+    setShowPreview(true)
+    try {
+      const res = await apiClient.post<{ data: ADSyncPreview }>(
+        `/api/admin/ad-sync/connections/${connectionId}/sync/preview`,
+        {}
+      )
+      setPreview(res.data)
+    } catch {
+      toast.error(t("errorOccurred"))
+      setShowPreview(false)
+    } finally {
+      setPreviewLoading(false)
+    }
+  }
+
+  async function handleConfirmSync() {
     setSyncing(true)
+    setShowPreview(false)
     try {
       await apiClient.post(`/api/admin/ad-sync/connections/${connectionId}/sync`, {})
       toast.success(t("triggerSync"))
@@ -196,9 +219,9 @@ export default function ConnectionDetailPage() {
 
       {/* Action Buttons */}
       <div className="flex gap-2 flex-wrap">
-        <Button onClick={handleSync} disabled={syncing}>
+        <Button onClick={handlePreviewSync} disabled={syncing || previewLoading}>
           <Play className="size-4 mr-2" />
-          {syncing ? t("saving") : t("triggerSync")}
+          {previewLoading ? t("loading") : syncing ? t("saving") : t("triggerSync")}
         </Button>
         <Button variant="outline" onClick={handleTestConnection} disabled={testing}>
           <Plug className="size-4 mr-2" />
@@ -409,6 +432,15 @@ export default function ConnectionDetailPage() {
         description={t("deleteConnectionConfirmationMessage")}
         confirmLabel={t("delete")}
         loading={deleting}
+      />
+
+      <SyncPreviewDialog
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        preview={preview}
+        loading={previewLoading}
+        onConfirmSync={handleConfirmSync}
+        syncing={syncing}
       />
     </div>
   )

@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Image from "next/image"
 import { Building2, MapPin, Globe } from "lucide-react"
 import { format } from "date-fns"
 import { useTranslation } from "@/lib/i18n/context"
@@ -18,9 +19,11 @@ export function CompanyDetailCard({ company }: CompanyDetailCardProps) {
       <CardHeader>
         <div className="flex items-center gap-4">
           {company.logo_url ? (
-            <img
+            <Image
               src={company.logo_url}
               alt=""
+              width={48}
+              height={48}
               className="size-12 rounded-lg object-cover"
             />
           ) : (

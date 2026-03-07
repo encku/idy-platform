@@ -22,6 +22,7 @@ import {
   Smartphone,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useCompanyFeatures } from "@/lib/admin/company-features-context"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -32,7 +33,12 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip"
 
-const adminNavItems = [
+const adminNavItems: {
+  href: string
+  icon: typeof LayoutDashboard
+  labelKey: string
+  featureGate?: string
+}[] = [
   { href: "/admin", icon: LayoutDashboard, labelKey: "adminDashboard" },
   { href: "/admin/users", icon: Users, labelKey: "adminUsers" },
   { href: "/admin/cards", icon: CreditCard, labelKey: "adminCards" },
@@ -41,7 +47,7 @@ const adminNavItems = [
   { href: "/admin/viewers", icon: Eye, labelKey: "adminViewers" },
   { href: "/admin/subscriptions", icon: Crown, labelKey: "adminSubscriptions" },
   { href: "/admin/analytics", icon: BarChart3, labelKey: "adminAnalytics" },
-  { href: "/admin/ad-sync", icon: FolderSync, labelKey: "adminADSync" },
+  { href: "/admin/ad-sync", icon: FolderSync, labelKey: "adminADSync", featureGate: "ad_sync" },
   { href: "/admin/notifications", icon: Bell, labelKey: "adminNotifications" },
   { href: "/admin/field-types", icon: Layers, labelKey: "adminFieldTypes" },
 ]
@@ -55,6 +61,11 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
   const pathname = usePathname()
   const { user, role } = useAuth()
   const { t } = useTranslation()
+  const { hasCompanyFeature, loading: featuresLoading } = useCompanyFeatures()
+
+  const visibleNavItems = adminNavItems.filter(
+    (item) => !item.featureGate || featuresLoading || hasCompanyFeature(item.featureGate)
+  )
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -88,7 +99,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
         {/* Navigation */}
         <ScrollArea className="flex-1 py-2">
           <nav className="flex flex-col gap-1 px-2">
-            {adminNavItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const isActive =
                 item.href === "/admin"
                   ? pathname === "/admin"

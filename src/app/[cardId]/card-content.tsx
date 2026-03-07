@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
 import { Loader2, X, Check, ExternalLink, UserPlus, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -233,97 +233,78 @@ export function CardContent({
   return (
     <>
       {/* Lead Form Modal (Before Content) */}
-      <AnimatePresence>
-        {showLeadModal && leadSettings && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-sm rounded-2xl bg-background p-6 shadow-2xl"
+      {showLeadModal && leadSettings && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-sm rounded-2xl bg-background p-6 shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+            <button
+              onClick={() => setShowLeadModal(false)}
+              className="absolute right-4 top-4 text-muted-foreground hover:text-foreground transition-colors"
             >
+              <X className="size-4" />
+            </button>
+
+            <div className="text-center mb-6">
+              <h2 className="text-lg font-semibold tracking-tight">
+                {leadSettings.form_title}
+              </h2>
+              {leadSettings.form_description && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  {leadSettings.form_description}
+                </p>
+              )}
+            </div>
+
+            <LeadForm
+              settings={leadSettings}
+              data={leadData}
+              onChange={setLeadData}
+              onSubmit={submitLeadForm}
+              loading={leadLoading}
+              t={t}
+            />
+
+            <button
+              onClick={() => setShowLeadModal(false)}
+              className="w-full mt-3 text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t("leadSkip")}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* PDF Viewer Modal */}
+      {pdfUrl && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="flex items-center justify-between px-4 py-3 bg-background/95 border-b">
+            <span className="text-sm font-medium truncate max-w-[60%]">
+              PDF
+            </span>
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => setShowLeadModal(false)}
-                className="absolute right-4 top-4 text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => window.open(pdfUrl, "_blank", "noopener,noreferrer")}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-muted hover:bg-muted/80 transition-colors"
+              >
+                <Download className="size-3.5" />
+                {t("openInNewTab")}
+              </button>
+              <button
+                onClick={() => setPdfUrl(null)}
+                className="flex size-8 items-center justify-center rounded-md hover:bg-muted transition-colors"
               >
                 <X className="size-4" />
               </button>
-
-              <div className="text-center mb-6">
-                <h2 className="text-lg font-semibold tracking-tight">
-                  {leadSettings.form_title}
-                </h2>
-                {leadSettings.form_description && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {leadSettings.form_description}
-                  </p>
-                )}
-              </div>
-
-              <LeadForm
-                settings={leadSettings}
-                data={leadData}
-                onChange={setLeadData}
-                onSubmit={submitLeadForm}
-                loading={leadLoading}
-                t={t}
-              />
-
-              <button
-                onClick={() => setShowLeadModal(false)}
-                className="w-full mt-3 text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {t("leadSkip")}
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* PDF Viewer Modal */}
-      <AnimatePresence>
-        {pdfUrl && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col bg-black/80 backdrop-blur-sm"
-          >
-            <div className="flex items-center justify-between px-4 py-3 bg-background/95 border-b">
-              <span className="text-sm font-medium truncate max-w-[60%]">
-                PDF
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => window.open(pdfUrl, "_blank", "noopener,noreferrer")}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-muted hover:bg-muted/80 transition-colors"
-                >
-                  <Download className="size-3.5" />
-                  {t("openInNewTab")}
-                </button>
-                <button
-                  onClick={() => setPdfUrl(null)}
-                  className="flex size-8 items-center justify-center rounded-md hover:bg-muted transition-colors"
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
             </div>
-            <div className="flex-1 min-h-0">
-              <iframe
-                src={pdfUrl}
-                className="w-full h-full border-0"
-                title="PDF Viewer"
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+          <div className="flex-1 min-h-0">
+            <iframe
+              src={pdfUrl}
+              className="w-full h-full border-0"
+              title="PDF Viewer"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Card Container */}
       <div className="mx-auto max-w-md pb-12">
@@ -331,26 +312,12 @@ export function CardContent({
         <div className="relative">
           <div
             className="relative h-48 overflow-hidden rounded-b-3xl"
-            style={
-              hasBackground
-                ? {
-                  backgroundImage: `url(${profile.background_picture_url})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }
-                : undefined
-            }
+            style={{
+              backgroundImage: `url(${hasBackground ? profile.background_picture_url : "/images/default-bg.webp"})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
           >
-            {!hasBackground && (
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: profile.theme_color
-                    ? `linear-gradient(135deg, ${profile.theme_color}, ${profile.theme_color}dd)`
-                    : "linear-gradient(135deg, #1e1e2e, #2d2d3f)",
-                }}
-              />
-            )}
             <div className="absolute inset-0 bg-black/20" />
           </div>
 
@@ -371,9 +338,12 @@ export function CardContent({
           {/* Profile Photo */}
           <div className="relative inline-block">
             {profile.picture_url ? (
-              <img
+              <Image
                 src={profile.picture_url}
                 alt={profile.name}
+                width={144}
+                height={144}
+                priority
                 className="size-36 rounded-full border-4 border-background object-cover shadow-lg"
               />
             ) : (
@@ -384,9 +354,11 @@ export function CardContent({
 
             {/* Badge */}
             {profile.badge_picture_url && (
-              <img
+              <Image
                 src={profile.badge_picture_url}
                 alt="Badge"
+                width={32}
+                height={32}
                 className="absolute -bottom-1 -right-1 size-8 rounded-full border-2 border-background object-cover"
               />
             )}
@@ -442,37 +414,33 @@ export function CardContent({
 
         {/* Thank You */}
         {leadSubmitted && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mx-6 mt-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 p-4 text-center"
-          >
+          <div className="mx-6 mt-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 p-4 text-center animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="mx-auto mb-2 flex size-8 items-center justify-center rounded-full bg-emerald-500 text-white">
               <Check className="size-4" />
             </div>
             <p className="text-sm text-emerald-700 dark:text-emerald-300">
               {t("leadThankYou")}
             </p>
-          </motion.div>
+          </div>
         )}
 
         {/* Fields */}
         {fields.length > 0 && isTile && (
           <div className="mt-14 px-6 grid grid-cols-3 gap-2.5">
             {fields.map((field, i) => (
-              <motion.button
+              <button
                 key={field.id ?? i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.04, type: "spring", stiffness: 300, damping: 24 }}
                 onClick={() => handleFieldClick(field)}
-                className="group flex flex-col items-center gap-2.5 p-3 transition-all duration-200 active:scale-95"
+                className="group flex flex-col items-center gap-2.5 p-3 transition-all duration-200 active:scale-95 animate-in fade-in zoom-in-90 duration-300 fill-mode-both"
+                style={{ animationDelay: `${i * 40}ms` }}
               >
                 <div className="relative flex size-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-b from-muted/80 to-muted shadow-sm ring-1 ring-black/[0.04] transition-transform duration-200 group-hover:scale-110">
                   {(field.icon_url || field.field_type?.icon_url) ? (
-                    <img
-                      src={field.icon_url || field.field_type?.icon_url}
+                    <Image
+                      src={field.icon_url || field.field_type?.icon_url || ""}
                       alt={field.name}
+                      width={64}
+                      height={64}
                       className="size-full rounded-2xl object-contain drop-shadow-sm"
                     />
                   ) : (
@@ -482,7 +450,7 @@ export function CardContent({
                 <span className="text-[10.5px] font-medium text-muted-foreground text-center leading-tight line-clamp-2 transition-colors group-hover:text-foreground">
                   {field.name}
                 </span>
-              </motion.button>
+              </button>
             ))}
           </div>
         )}
@@ -490,19 +458,19 @@ export function CardContent({
         {fields.length > 0 && !isTile && (
           <div className="mt-6 px-6 space-y-2.5">
             {fields.map((field, i) => (
-              <motion.button
+              <button
                 key={field.id ?? i}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
                 onClick={() => handleFieldClick(field)}
-                className="group flex w-full items-center gap-3.5 rounded-xl border bg-background p-3.5 text-left transition-all hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98]"
+                className="group flex w-full items-center gap-3.5 rounded-xl border bg-background p-3.5 text-left transition-all hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] animate-in fade-in slide-in-from-bottom-3 duration-300 fill-mode-both"
+                style={{ animationDelay: `${i * 50}ms` }}
               >
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
                   {(field.icon_url || field.field_type?.icon_url) ? (
-                    <img
-                      src={field.icon_url || field.field_type?.icon_url}
+                    <Image
+                      src={field.icon_url || field.field_type?.icon_url || ""}
                       alt={field.name}
+                      width={24}
+                      height={24}
                       className="size-6 object-contain"
                     />
                   ) : (
@@ -511,7 +479,7 @@ export function CardContent({
                 </div>
                 <span className="flex-1 text-sm font-medium">{field.name}</span>
                 <ExternalLink className="size-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-              </motion.button>
+              </button>
             ))}
           </div>
         )}

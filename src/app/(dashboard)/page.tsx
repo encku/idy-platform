@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Plus, Search } from "lucide-react"
 import { AppHeader } from "@/components/dashboard/app-header"
 import { FieldList, type FieldItem } from "@/components/dashboard/field-list"
@@ -262,9 +263,11 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4">
               <div className="size-16 shrink-0 overflow-hidden rounded-full bg-muted">
                 {(profile as User).picture_url ? (
-                  <img
+                  <Image
                     src={(profile as User).picture_url}
                     alt={profile.name}
+                    width={64}
+                    height={64}
                     className="size-full object-cover"
                   />
                 ) : (
@@ -329,9 +332,11 @@ export default function ProfilePage() {
                       : "hover:bg-muted/50"
                   }`}
                 >
-                  <img
+                  <Image
                     src={getCardImage(c.card_type_id, c.color_id)}
                     alt={c.user_preferred_name || c.public_key}
+                    width={80}
+                    height={48}
                     className="h-12 w-auto rounded-lg object-contain"
                   />
                   <span className="max-w-[80px] truncate">

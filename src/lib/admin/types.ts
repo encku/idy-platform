@@ -523,6 +523,43 @@ export interface SSOLoginLog {
   inserted_at: string
 }
 
+// ─── Company Feature Types ───
+
+export interface CompanyFeature {
+  id: number
+  company_id: number
+  feature_name: string
+  is_enabled: boolean
+  enabled_by_user_id: number | null
+  inserted_at: string
+}
+
+export const COMPANY_FEATURES = {
+  AD_SYNC: "ad_sync",
+} as const
+
+export type CompanyFeatureName =
+  (typeof COMPANY_FEATURES)[keyof typeof COMPANY_FEATURES]
+
+// ─── Sync Log Detail Types ───
+
+export interface ADFieldChangeLog {
+  id: number
+  ad_sync_log_id: number
+  ad_user_link_id: number
+  field_name: string
+  old_value: string | null
+  new_value: string | null
+  change_source: string
+  applied: boolean
+  inserted_at: string
+}
+
+export interface ADSyncLogDetail {
+  log: ADSyncLog
+  field_changes: ADFieldChangeLog[]
+}
+
 // ─── Paginated Response ───
 
 export interface PaginatedResponse<T> {

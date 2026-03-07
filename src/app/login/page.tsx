@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState, useEffect, useRef, useCallback } from "react"
+import { Suspense, useState, useEffect, useRef, useCallback, lazy } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff, Loader2, Shield, ArrowLeft, KeyRound } from "lucide-react"
@@ -8,6 +8,23 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useTranslation } from "@/lib/i18n/context"
+
+function SplineEmbed() {
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    const t = requestIdleCallback(() => setShow(true))
+    return () => cancelIdleCallback(t)
+  }, [])
+  if (!show) return null
+  return (
+    <iframe
+      src="https://my.spline.design/holographiccreditcard-ZnFbSnzcS5WNPF1LZgjXmQL5/"
+      className="absolute inset-0 w-full h-full origin-center"
+      style={{ border: "none", transform: "scale(1.75)" }}
+      loading="lazy"
+    />
+  )
+}
 
 function LoginForm() {
   const { t } = useTranslation()
@@ -232,12 +249,8 @@ function LoginForm() {
           <span className="text-xl font-semibold tracking-tight">idycard</span>
         </div>
 
-        {/* Spline Scene */}
-        <iframe
-          src="https://my.spline.design/holographiccreditcard-ZnFbSnzcS5WNPF1LZgjXmQL5/"
-          className="absolute inset-0 w-full h-full origin-center"
-          style={{ border: "none", transform: "scale(1.75)" }}
-        />
+        {/* Spline Scene — lazy loaded after form is interactive */}
+        <SplineEmbed />
 
         {/* Bottom text */}
         <div className="absolute bottom-12 left-12 z-10 space-y-3">

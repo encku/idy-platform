@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidateTag } from "next/cache"
 import { ACCESS_TOKEN_COOKIE } from "@/lib/auth"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
@@ -36,6 +37,7 @@ export async function PUT(
     return NextResponse.json(err || { error: "Failed" }, { status: res.status })
   }
 
+  revalidateTag(`card-${cardId}`, { expire: 0 })
   const data = await res.json()
   return NextResponse.json(data)
 }
@@ -58,6 +60,7 @@ export async function DELETE(
     return NextResponse.json(err || { error: "Failed" }, { status: res.status })
   }
 
+  revalidateTag(`card-${cardId}`, { expire: 0 })
   const data = await res.json().catch(() => ({}))
   return NextResponse.json(data)
 }

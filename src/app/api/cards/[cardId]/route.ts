@@ -21,7 +21,9 @@ export async function GET(
   }
 
   const data = await res.json()
-  return NextResponse.json(data)
+  const response = NextResponse.json(data)
+  response.headers.set("Cache-Control", "private, max-age=30, stale-while-revalidate=60")
+  return response
 }
 
 export async function DELETE(

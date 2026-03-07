@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 import type { FieldType } from "@/lib/admin/types"
 
@@ -44,7 +45,7 @@ export function FieldTypeGroup({ groupName, fieldTypes }: FieldTypeGroupProps) {
                 className="flex items-center gap-3 rounded-lg border p-3"
               >
                 {ft.icon_url ? (
-                  <img src={ft.icon_url} alt="" className="size-6" />
+                  <Image src={ft.icon_url} alt="" width={24} height={24} className="size-6" />
                 ) : (
                   <div className="size-6 rounded bg-muted flex items-center justify-center text-xs">
                     {ft.icon || ft.name.charAt(0)}

@@ -3,6 +3,7 @@
 import { BottomNav } from "@/components/dashboard/bottom-nav"
 import { Toaster } from "@/components/ui/sonner"
 import { FeaturesProvider } from "@/lib/features/context"
+import { CompanyFeaturesProvider } from "@/lib/admin/company-features-context"
 import { AuthProvider, useAuth } from "@/lib/auth/context"
 import { useIsDesktop } from "@/lib/hooks/use-media-query"
 import { AdminLayoutShell } from "@/components/admin/admin-layout-shell"
@@ -42,7 +43,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       <FeaturesProvider>
-        <DashboardContent>{children}</DashboardContent>
+        <CompanyFeaturesProvider>
+          <DashboardContent>{children}</DashboardContent>
+        </CompanyFeaturesProvider>
       </FeaturesProvider>
     </AuthProvider>
   )

@@ -1,13 +1,15 @@
 "use client"
 
+import { useRef } from "react"
+import Image from "next/image"
 import { GripVertical, Trash2 } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { motion, useMotionValue, animate } from "framer-motion"
 import { apiClient } from "@/lib/api-client"
 
 const DELETE_THRESHOLD = -80
+const SPRING_EASE = "cubic-bezier(0.22, 1, 0.36, 1)"
 
 interface FieldListItemProps {
   id: number
@@ -51,7 +53,58 @@ export function FieldListItem({
     opacity: isDragging ? 0.5 : 1,
   }
 
-  const x = useMotionValue(0)
+  const swipeRef = useRef<HTMLDivElement>(null)
+  const touchStart = useRef({ x: 0, y: 0 })
+  const currentOffset = useRef(0)
+  const direction = useRef<"none" | "horizontal" | "vertical">("none")
+
+  function animateTo(target: number) {
+    const el = swipeRef.current
+    if (!el) return
+    el.style.transition = `transform 0.3s ${SPRING_EASE}`
+    el.style.transform = `translateX(${target}px)`
+    currentOffset.current = target
+  }
+
+  function handleTouchStart(e: React.TouchEvent) {
+    const touch = e.touches[0]
+    touchStart.current = { x: touch.clientX, y: touch.clientY }
+    direction.current = "none"
+    if (swipeRef.current) swipeRef.current.style.transition = "none"
+  }
+
+  function handleTouchMove(e: React.TouchEvent) {
+    const touch = e.touches[0]
+    const dx = touch.clientX - touchStart.current.x
+    const dy = touch.clientY - touchStart.current.y
+
+    if (direction.current === "none") {
+      if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return
+      direction.current = Math.abs(dx) > Math.abs(dy) ? "horizontal" : "vertical"
+    }
+
+    if (direction.current !== "horizontal") return
+
+    let newX = currentOffset.current + dx
+    if (newX < DELETE_THRESHOLD) {
+      newX = DELETE_THRESHOLD + (newX - DELETE_THRESHOLD) * 0.1
+    } else if (newX > 0) {
+      newX = newX * 0.1
+    }
+
+    if (swipeRef.current) {
+      swipeRef.current.style.transform = `translateX(${newX}px)`
+    }
+  }
+
+  function handleTouchEnd() {
+    if (direction.current !== "horizontal") return
+    const el = swipeRef.current
+    if (!el) return
+    const match = el.style.transform.match(/translateX\(([-\d.]+)px\)/)
+    const x = match ? parseFloat(match[1]) : 0
+    animateTo(x < DELETE_THRESHOLD / 2 ? DELETE_THRESHOLD : 0)
+  }
 
   async function handleToggle(checked: boolean) {
     onActiveChange(id, checked)
@@ -72,18 +125,9 @@ export function FieldListItem({
     }
   }
 
-  function handleDragEnd() {
-    const currentX = x.get()
-    if (currentX < DELETE_THRESHOLD / 2) {
-      animate(x, DELETE_THRESHOLD, { type: "spring", stiffness: 300, damping: 30 })
-    } else {
-      animate(x, 0, { type: "spring", stiffness: 300, damping: 30 })
-    }
-  }
-
   function handleDeleteClick(e: React.MouseEvent) {
     e.stopPropagation()
-    animate(x, 0, { type: "spring", stiffness: 300, damping: 30 })
+    animateTo(0)
     onDelete?.(id)
   }
 
@@ -106,12 +150,11 @@ export function FieldListItem({
       )}
 
       {/* Swipeable foreground */}
-      <motion.div
-        style={{ x }}
-        drag={readOnly ? false : "x"}
-        dragConstraints={readOnly ? undefined : { left: DELETE_THRESHOLD, right: 0 }}
-        dragElastic={0.1}
-        onDragEnd={readOnly ? undefined : handleDragEnd}
+      <div
+        ref={swipeRef}
+        onTouchStart={readOnly ? undefined : handleTouchStart}
+        onTouchMove={readOnly ? undefined : handleTouchMove}
+        onTouchEnd={readOnly ? undefined : handleTouchEnd}
         className="relative flex items-center gap-2 rounded-2xl bg-card p-3 shadow-sm"
       >
         {!readOnly && (
@@ -129,9 +172,11 @@ export function FieldListItem({
           onClick={onClick}
           role={onClick ? "button" : undefined}
         >
-          <img
+          <Image
             src={icon}
             alt={name}
+            width={44}
+            height={44}
             className="size-11 shrink-0 rounded-lg object-contain"
           />
           <span className="flex-1 text-sm font-medium text-left">{name}</span>
@@ -144,7 +189,7 @@ export function FieldListItem({
             disabled={readOnly || disableSwitch}
           />
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

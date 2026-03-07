@@ -197,6 +197,7 @@ const en: Record<string, string> = {
   passwordUpdated: "Password updated",
   passwordMinLength: "Password must be at least 6 characters",
   saving: "Saving...",
+  loading: "Loading...",
   saved: "Saved",
   errorOccurred: "An error occurred",
   noResults: "No results found",
@@ -232,6 +233,7 @@ const en: Record<string, string> = {
   visibilityUpdated: "Visibility updated",
   back: "Back",
   create: "Create",
+  createdAt: "Created At",
   edit: "Edit",
   noCards: "No cards yet",
   searchPlaceholder: "Search...",
@@ -665,6 +667,42 @@ const en: Record<string, string> = {
   enabled: "Enabled",
   done: "Done",
   copied: "Copied to clipboard",
+
+  // Company Features
+  companyFeatures: "Features",
+  companyFeaturesDesc: "Enable or disable features for this company",
+  featureADSync: "AD Sync",
+  featureADSyncDesc: "Active Directory integration and user synchronization",
+  featureEnabled: "Enabled",
+  featureDisabled: "Disabled",
+  featureUpdateSuccess: "Company features updated",
+  featureNotAvailable: "This feature is not available for your company",
+
+  // Sync Preview
+  syncPreviewTitle: "Sync Preview",
+  syncPreviewDesc: "Review the changes before starting the sync",
+  syncPreviewCreate: "To Create",
+  syncPreviewUpdate: "To Update",
+  syncPreviewDeactivate: "To Deactivate",
+  syncPreviewSkip: "To Skip",
+  syncPreviewTotalUsers: "Total AD Users",
+  syncPreviewAction: "Action",
+  syncPreviewConfirm: "Start Sync",
+  syncPreviewNoChanges: "No changes detected",
+  syncPreviewLoading: "Fetching preview from directory...",
+
+  // Sync Log Detail
+  syncLogDetail: "Sync Log Detail",
+  syncLogDuration: "Duration",
+  syncLogStarted: "Started",
+  syncLogCompleted: "Completed",
+  syncLogErrorMessage: "Error Message",
+  fieldChanges: "Field Changes",
+  oldValue: "Old Value",
+  newValue: "New Value",
+  changeSource: "Source",
+  applied: "Applied",
+  noFieldChanges: "No field changes recorded for this sync",
 }
 
 export default en

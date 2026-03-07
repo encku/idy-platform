@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_APP_VERSION: `${major}.${minor}.${patch}`,
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
@@ -29,6 +30,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "@radix-ui/react-icons",
+      "date-fns",
+      "recharts",
+    ],
+  },
+  poweredByHeader: false,
 };
 
 export default nextConfig;

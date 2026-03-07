@@ -14,7 +14,7 @@ export interface OGProfileData {
 export async function getCardProfile(cardId: string) {
   try {
     const res = await fetch(`${API_URL}/card/${cardId}/profile`, {
-      next: { revalidate: 3600 },
+      next: { tags: [`card-${cardId}`], revalidate: 3600 },
     })
     if (!res.ok) return null
     const json = await res.json()

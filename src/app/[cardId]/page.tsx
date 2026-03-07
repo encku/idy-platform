@@ -10,7 +10,7 @@ async function getCardProfile(
 ): Promise<CardProfileResponse | null> {
   try {
     const res = await fetch(`${API_URL}/card/${cardId}/profile`, {
-      next: { revalidate: 60 },
+      next: { tags: [`card-${cardId}`], revalidate: 3600 },
     })
     if (!res.ok) return null
     const json = await res.json()
@@ -25,7 +25,7 @@ async function getLeadSettings(
 ): Promise<LeadSettings | null> {
   try {
     const res = await fetch(`${API_URL}/card/${cardId}/lead-form`, {
-      next: { revalidate: 60 },
+      next: { tags: [`card-${cardId}`], revalidate: 3600 },
     })
     if (!res.ok) return null
     const json = await res.json()

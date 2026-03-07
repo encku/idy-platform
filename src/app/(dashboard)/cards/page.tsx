@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
+import Image from "next/image"
 import { Pencil, Trash2, QrCode, Share2 } from "lucide-react"
 import { AppHeader } from "@/components/dashboard/app-header"
 import { QrDialog } from "@/components/dashboard/qr-dialog"
@@ -139,9 +140,11 @@ export default function MyCardsPage() {
                 {cards.map((card) => (
                   <CarouselItem key={card.id}>
                     <div className="flex flex-col items-center py-4">
-                      <img
+                      <Image
                         src={getCardImage(card.card_type_id, card.color_id)}
                         alt={card.user_preferred_name || card.public_key}
+                        width={300}
+                        height={192}
                         className="h-48 max-w-[300px] object-contain"
                       />
                       <p className="mt-3 text-sm font-medium truncate max-w-[200px]">

@@ -2,5 +2,7 @@ import { NextRequest } from "next/server"
 import { proxyRequest } from "@/lib/api-helpers"
 
 export async function GET(request: NextRequest) {
-  return proxyRequest(request, "/analytics/overview")
+  return proxyRequest(request, "/analytics/overview", {
+    cacheControl: "private, max-age=60, stale-while-revalidate=120",
+  })
 }

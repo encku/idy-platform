@@ -31,10 +31,21 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
+function readUserCookie(): AuthUser | null {
+  if (typeof document === "undefined") return null
+  try {
+    const match = document.cookie.split("; ").find((c) => c.startsWith("idy_user="))
+    if (!match) return null
+    return JSON.parse(atob(match.split("=")[1]))
+  } catch {
+    return null
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
+  const [user, setUser] = useState<AuthUser | null>(() => readUserCookie())
   const [role, setRole] = useState<UserRole>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(() => readUserCookie() === null)
 
   const fetchAuth = useCallback(async () => {
     try {
