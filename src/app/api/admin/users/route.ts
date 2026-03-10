@@ -7,8 +7,10 @@ export async function GET(request: NextRequest) {
   const limit = searchParams.get("limit") || "20"
   const search = searchParams.get("search") || ""
   const orderBy = searchParams.get("order_by") || "desc"
+  const companyId = searchParams.get("company_id") || ""
 
   const query = new URLSearchParams({ page, limit, search, order_by: orderBy })
+  if (companyId) query.set("company_id", companyId)
   return proxyRequest(request, `/admin/user?${query}`)
 }
 
