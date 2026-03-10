@@ -160,6 +160,8 @@ export interface Company {
   logo_url?: string
   inserted_at: string
   allow_email_2fa?: boolean
+  user_count?: number
+  card_count?: number
 }
 
 export interface CompanyDetail extends Company {
