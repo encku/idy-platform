@@ -17,7 +17,6 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | null>(null)
 
 function detectLocale(): Locale {
-  if (typeof window === "undefined") return "tr"
   const saved = localStorage.getItem("idy_locale")
   if (saved === "tr" || saved === "en") return saved
   const lang = navigator.language.split("-")[0]
@@ -25,7 +24,11 @@ function detectLocale(): Locale {
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(detectLocale)
+  const [locale, setLocaleState] = useState<Locale>("tr")
+
+  useEffect(() => {
+    setLocaleState(detectLocale())
+  }, [])
 
   const handleSetLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale)

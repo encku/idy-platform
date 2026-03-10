@@ -12,8 +12,8 @@ import { useTranslation } from "@/lib/i18n/context"
 function SplineEmbed() {
   const [show, setShow] = useState(false)
   useEffect(() => {
-    const t = requestIdleCallback(() => setShow(true))
-    return () => cancelIdleCallback(t)
+    const t = setTimeout(() => setShow(true), 100)
+    return () => clearTimeout(t)
   }, [])
   if (!show) return null
   return (

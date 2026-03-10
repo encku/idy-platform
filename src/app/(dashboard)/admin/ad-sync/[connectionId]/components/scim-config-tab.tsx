@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,11 +18,11 @@ export function SCIMConfigTab({ connectionId }: Props) {
   const { t } = useTranslation()
   const [generatedToken, setGeneratedToken] = useState<string | null>(null)
   const [generating, setGenerating] = useState(false)
+  const [scimEndpoint, setScimEndpoint] = useState("/scim/v2")
 
-  const scimEndpoint =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/scim/v2`
-      : "/scim/v2"
+  useEffect(() => {
+    setScimEndpoint(`${window.location.origin}/scim/v2`)
+  }, [])
 
   async function handleGenerateToken() {
     setGenerating(true)
