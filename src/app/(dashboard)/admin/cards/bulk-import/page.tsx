@@ -40,7 +40,12 @@ import {
   X,
   FileSpreadsheet,
   Zap,
+  Smartphone,
+  ImageIcon,
+  Eye,
 } from "lucide-react"
+import { CardContent as CardPreviewContent } from "@/app/[cardId]/card-content"
+import type { CardProfile, CardField } from "@/lib/types"
 import type { BulkImportPayload } from "@/lib/admin/types"
 
 // ─── Types ───
@@ -238,6 +243,92 @@ function getFieldTypeIdFromKey(
     if (!isNaN(id)) return id
   }
   return null
+}
+
+function fileToDataURL(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+// ─── Bulk Card Preview ───
+
+function BulkCardPreview({
+  row,
+  profilePictureUrl,
+  selectedFieldTypes,
+  csvFieldNames,
+  fieldTypes,
+}: {
+  row: TableRowData | null
+  profilePictureUrl: string | null
+  selectedFieldTypes: SelectedFieldType[]
+  csvFieldNames: Record<string, string>
+  fieldTypes: FieldType[]
+}) {
+  const { t } = useTranslation()
+
+  if (!row) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-3">
+        <Smartphone className="size-10 opacity-30" />
+        <p className="text-xs text-center px-6">
+          {t("selectRowForPreview")}
+        </p>
+      </div>
+    )
+  }
+
+  // Build synthetic CardProfile from row data
+  const profile: CardProfile = {
+    name: row.name || "",
+    title: row.title || "",
+    company: row.company || "",
+    description: "",
+    picture_url: profilePictureUrl || "",
+    background_picture_url: "",
+    badge_picture_url: "",
+    is_hidden: false,
+    theme_color: "",
+    view_mode: "tile",
+    address: "",
+  }
+
+  // Build synthetic CardField[] from row fields
+  const fields: CardField[] = Object.entries(row.fields)
+    .filter(([, value]) => value?.trim())
+    .map(([fieldKey, data], index) => {
+      const sft = selectedFieldTypes.find((f) => f.uniqueId === fieldKey)
+      const ftId = sft?.id || parseInt(fieldKey.split("_")[0]) || 0
+      const ft = fieldTypes.find((f) => f.id === ftId)
+      const fieldName = csvFieldNames[fieldKey] || sft?.fieldName || sft?.displayName || ft?.name || `Field ${ftId}`
+
+      return {
+        id: index + 1,
+        name: fieldName,
+        data: data.trim(),
+        icon_url: ft?.icon_url || "",
+        prefix: "",
+        postfix: "",
+        formatted_data: null,
+        field_type: {
+          name: ft?.name || fieldName,
+          icon_url: ft?.icon_url || "",
+        },
+      }
+    })
+
+  return (
+    <CardPreviewContent
+      profile={profile}
+      fields={fields}
+      leadSettings={null}
+      cardId="preview"
+    />
+  )
 }
 
 // ─── Quick Create Tab ───
@@ -603,6 +694,14 @@ export default function BulkImportPage() {
   // CSV
   const [csvFile, setCsvFile] = useState<File | null>(null)
   const [csvParseErrors, setCsvParseErrors] = useState<string[]>([])
+
+  // Profile Picture
+  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null)
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null)
+  const profilePicInputRef = useRef<HTMLInputElement>(null)
+
+  // Preview
+  const [previewRowIndex, setPreviewRowIndex] = useState<number | null>(null)
 
   // Loading States
   const [loadingFieldTypes, setLoadingFieldTypes] = useState(false)
@@ -1356,12 +1455,18 @@ export default function BulkImportPage() {
 
     setImportingCards(true)
     try {
+      // Convert profile picture to base64 data URL if selected
+      let profilePicDataUrl: string | null = null
+      if (profilePictureFile) {
+        profilePicDataUrl = await fileToDataURL(profilePictureFile)
+      }
+
       const payload: BulkImportPayload = {
         company_id: selectedCompany ? parseInt(selectedCompany) : null,
         user_id: selectedUser ? parseInt(selectedUser) : null,
         assign_to_individual_users: assignToIndividualUsers,
         password: assignToIndividualUsers ? userPassword : "",
-        profile_picture_url: null,
+        profile_picture_url: profilePicDataUrl,
         field_icons: null,
         cards: validated.map((row) => {
           let emailValue: string | null = null
@@ -1412,6 +1517,9 @@ export default function BulkImportPage() {
 
       // Reset
       setUserPassword("")
+      setProfilePictureFile(null)
+      setProfilePictureUrl(null)
+      setPreviewRowIndex(null)
       setCsvFile(null)
       setCsvParseErrors([])
       setSelectedFieldTypes([])
@@ -1547,6 +1655,63 @@ export default function BulkImportPage() {
                       placeholder={t("userPasswordPlaceholder")}
                     />
                   </div>
+                )}
+              </div>
+
+              {/* Profile Picture Upload */}
+              <Separator className="my-4" />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
+                  {profilePictureUrl ? (
+                    <button
+                      onClick={() => profilePicInputRef.current?.click()}
+                      className="group relative size-16 overflow-hidden rounded-full bg-muted border-2 border-border"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={profilePictureUrl} alt="Profile" className="size-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Upload className="size-4 text-white" />
+                      </div>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => profilePicInputRef.current?.click()}
+                      className="flex size-16 items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/30 bg-muted hover:border-muted-foreground/50 transition-colors"
+                    >
+                      <ImageIcon className="size-5 text-muted-foreground" />
+                    </button>
+                  )}
+                  <input
+                    ref={profilePicInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        setProfilePictureFile(file)
+                        setProfilePictureUrl(URL.createObjectURL(file))
+                      }
+                    }}
+                  />
+                  <div>
+                    <p className="text-sm font-medium">{t("commonProfilePicture")}</p>
+                    <p className="text-xs text-muted-foreground">{t("commonProfilePictureHint")}</p>
+                  </div>
+                </div>
+                {profilePictureUrl && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    onClick={() => {
+                      setProfilePictureFile(null)
+                      setProfilePictureUrl(null)
+                      if (profilePicInputRef.current) profilePicInputRef.current.value = ""
+                    }}
+                  >
+                    <X className="size-4 text-destructive" />
+                  </Button>
                 )}
               </div>
             </CardContent>
@@ -1831,15 +1996,26 @@ export default function BulkImportPage() {
 
                         {/* Actions */}
                         <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-7"
-                            onClick={() => removeTableRow(index)}
-                            disabled={tableRows.length <= 1}
-                          >
-                            <Trash2 className="size-3.5 text-destructive" />
-                          </Button>
+                          <div className="flex gap-0.5">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className={`size-7 ${previewRowIndex === index ? "bg-primary/10 text-primary" : ""}`}
+                              onClick={() => setPreviewRowIndex(previewRowIndex === index ? null : index)}
+                              title={t("preview")}
+                            >
+                              <Eye className="size-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-7"
+                              onClick={() => removeTableRow(index)}
+                              disabled={tableRows.length <= 1}
+                            >
+                              <Trash2 className="size-3.5 text-destructive" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1872,6 +2048,55 @@ export default function BulkImportPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Mobile Preview */}
+          {previewRowIndex !== null && tableRows[previewRowIndex] && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">
+                    <Smartphone className="inline size-4 mr-2" />
+                    {t("mobilePreview")} - #{previewRowIndex + 1} {tableRows[previewRowIndex].name || tableRows[previewRowIndex].publicKey}
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    onClick={() => setPreviewRowIndex(null)}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-center">
+                  <div className="relative w-[320px] h-[640px] rounded-[2.5rem] border-[6px] border-foreground/80 bg-background overflow-hidden shadow-2xl">
+                    {/* Notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[24px] bg-foreground/80 rounded-b-xl z-10" />
+                    {/* Content */}
+                    <div className="h-full overflow-hidden">
+                      <div
+                        className="origin-top-left overflow-y-auto pt-[30px]"
+                        style={{
+                          width: 375,
+                          height: 'calc(100% / 0.821)',
+                          transform: 'scale(0.821)',
+                        }}
+                      >
+                        <BulkCardPreview
+                          row={tableRows[previewRowIndex]}
+                          profilePictureUrl={profilePictureUrl}
+                          selectedFieldTypes={selectedFieldTypes}
+                          csvFieldNames={csvFieldNames}
+                          fieldTypes={fieldTypes}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>

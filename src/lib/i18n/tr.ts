@@ -731,6 +731,9 @@ const tr: Record<string, string> = {
   colorBlack: "Siyah",
   colorWhite: "Beyaz",
   colorHologram: "Hologram",
+  commonProfilePicture: "Ortak Profil Fotoğrafı",
+  commonProfilePictureHint: "Bu fotoğraf tüm içe aktarılan kartlarda kullanılacak",
+  selectRowForPreview: "Kart önizlemesi için satırdaki göz ikonuna tıklayın",
 }
 
 export default tr

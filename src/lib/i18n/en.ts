@@ -731,6 +731,9 @@ const en: Record<string, string> = {
   colorBlack: "Black",
   colorWhite: "White",
   colorHologram: "Hologram",
+  commonProfilePicture: "Common Profile Picture",
+  commonProfilePictureHint: "This photo will be used for all imported cards",
+  selectRowForPreview: "Click the eye icon on a row to preview the card",
 }
 
 export default en
