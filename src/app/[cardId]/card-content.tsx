@@ -324,7 +324,7 @@ export function CardContent({
           {/* Save to Contacts - FAB */}
           <button
             onClick={() => {
-              window.location.href = `${API_URL}/card/${cardId}/vcard`
+              window.location.href = `/api/card/${cardId}/vcard`
             }}
             className="absolute -bottom-6 right-12 z-10 flex size-12 items-center justify-center rounded-full border-2 border-white/20 bg-black text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
             title={t("addToContacts")}

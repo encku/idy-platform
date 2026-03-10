@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect, useRef, useCallback, lazy } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Eye, EyeOff, Loader2, Shield, ArrowLeft, KeyRound } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -243,9 +244,7 @@ function LoginForm() {
       <div className="relative hidden lg:flex flex-col bg-foreground text-background overflow-hidden">
         {/* Logo */}
         <div className="absolute top-12 left-12 z-10 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-background text-foreground font-bold text-lg">
-            id
-          </div>
+          <Image src="/logo.png" alt="idycard" width={40} height={40} className="size-10 dark:invert" />
           <span className="text-xl font-semibold tracking-tight">idycard</span>
         </div>
 
@@ -268,9 +267,7 @@ function LoginForm() {
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
           <div className="flex items-center gap-3 lg:hidden">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-foreground text-background font-bold text-sm">
-              id
-            </div>
+            <Image src="/logo.png" alt="idycard" width={36} height={36} className="size-9" />
             <span className="text-lg font-semibold tracking-tight">
               idycard
             </span>
@@ -517,6 +514,32 @@ function LoginForm() {
               </div>
             </>
           )}
+
+          {/* Mobile Store Links */}
+          <div className="flex flex-col gap-2 lg:hidden">
+            <a
+              href="https://apps.apple.com/tr/app/idycard/id6446066914"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+            >
+              <svg viewBox="0 0 24 24" className="size-5" fill="currentColor">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+              </svg>
+              {t("downloadOnAppStore")}
+            </a>
+            <a
+              href="https://play.google.com/store/apps/details?id=com.idycard.android"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+            >
+              <svg viewBox="0 0 24 24" className="size-5" fill="currentColor">
+                <path d="M3.18 23.78c-.17-.16-.18-.38-.18-.7V.96c0-.35.03-.56.21-.71L13.77 12 3.18 23.78zm1.49.71l11.72-11.72 2.58 2.58-13.21 7.63c-.46.27-.82.37-1.09.51zM20.66 13.33l-3.02 3.02-2.6-2.6 2.6-2.6 3.02 3.02c.31.15.48.37.48.58 0 .21-.17.43-.48.58zM4.67-.49C4.95-.35 5.3-.25 5.77.02l13.2 7.62-2.58 2.58L4.67-.49z"/>
+              </svg>
+              {t("getItOnGooglePlay")}
+            </a>
+          </div>
 
           {/* Footer */}
           <p className="text-center text-xs text-muted-foreground">

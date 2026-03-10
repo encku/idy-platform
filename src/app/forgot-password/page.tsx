@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -60,9 +61,7 @@ export default function ForgotPasswordPage() {
 
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-foreground text-background font-bold text-sm">
-            id
-          </div>
+          <Image src="/logo.png" alt="idycard" width={36} height={36} className="size-9" />
           <span className="text-lg font-semibold tracking-tight">
             idycard
           </span>

@@ -3,15 +3,20 @@
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { CheckCircle2, Loader2, XCircle } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/context"
-import { useAuth } from "@/lib/auth/context"
+
+function hasUserCookie() {
+  if (typeof document === "undefined") return false
+  return document.cookie.split("; ").some((c) => c.startsWith("idy_user="))
+}
 
 export default function VerifyEmailPage() {
   const { t } = useTranslation()
   const params = useParams()
   const token = params.token as string
-  const { user, refetch } = useAuth()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
@@ -43,7 +48,7 @@ export default function VerifyEmailPage() {
         }
 
         setSuccess(true)
-        await refetch()
+        setIsLoggedIn(hasUserCookie())
       } catch (err) {
         setError(err instanceof Error ? err.message : t("errorCodes.1"))
       } finally {
@@ -52,16 +57,14 @@ export default function VerifyEmailPage() {
     }
 
     verify()
-  }, [token, t, refetch])
+  }, [token, t])
 
   return (
     <div className="flex min-h-svh items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-8">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-foreground text-background font-bold text-sm">
-            id
-          </div>
+          <Image src="/logo.png" alt="idycard" width={36} height={36} className="size-9" />
           <span className="text-lg font-semibold tracking-tight">
             idycard
           </span>
@@ -99,10 +102,10 @@ export default function VerifyEmailPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           <Link
-            href={user ? "/" : "/login"}
+            href={isLoggedIn ? "/" : "/login"}
             className="text-foreground underline underline-offset-4 hover:text-foreground/80"
           >
-            {user ? t("backToDashboard") : t("login")}
+            {isLoggedIn ? t("backToDashboard") : t("login")}
           </Link>
         </p>
       </div>
