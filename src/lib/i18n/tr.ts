@@ -205,6 +205,8 @@ const tr: Record<string, string> = {
   linkCopied: "Bağlantı kopyalandı",
   openInNewTab: "Yeni Sekmede Aç",
   mobilePreview: "Mobil Önizleme",
+  live: "Canlı",
+  draft: "Taslak",
   selectCardForPreview: "Önizlemek için tablodan bir kart seçin",
   page: "Sayfa",
   previous: "Önceki",

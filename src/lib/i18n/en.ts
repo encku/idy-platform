@@ -205,6 +205,8 @@ const en: Record<string, string> = {
   linkCopied: "Link copied",
   openInNewTab: "Open in New Tab",
   mobilePreview: "Mobile Preview",
+  live: "Live",
+  draft: "Draft",
   selectCardForPreview: "Select a card from the table to preview",
   page: "Page",
   previous: "Previous",

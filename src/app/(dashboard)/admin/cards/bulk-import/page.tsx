@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/table"
 import { Separator } from "@/components/ui/separator"
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
+import { PhoneFrame } from "@/components/admin/phone-frame"
 import { apiClient } from "@/lib/api-client"
 import { useTranslation } from "@/lib/i18n/context"
 import { toast } from "sonner"
@@ -2070,29 +2071,15 @@ export default function BulkImportPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex justify-center">
-                  <div className="relative w-[320px] h-[640px] rounded-[2.5rem] border-[6px] border-foreground/80 bg-background overflow-hidden shadow-2xl">
-                    {/* Notch */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[24px] bg-foreground/80 rounded-b-xl z-10" />
-                    {/* Content */}
-                    <div className="h-full overflow-hidden">
-                      <div
-                        className="origin-top-left overflow-y-auto pt-[30px]"
-                        style={{
-                          width: 375,
-                          height: 'calc(100% / 0.821)',
-                          transform: 'scale(0.821)',
-                        }}
-                      >
-                        <BulkCardPreview
-                          row={tableRows[previewRowIndex]}
-                          profilePictureUrl={profilePictureUrl}
-                          selectedFieldTypes={selectedFieldTypes}
-                          csvFieldNames={csvFieldNames}
-                          fieldTypes={fieldTypes}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <PhoneFrame badge={{ label: t("draft"), variant: "draft" }}>
+                    <BulkCardPreview
+                      row={tableRows[previewRowIndex]}
+                      profilePictureUrl={profilePictureUrl}
+                      selectedFieldTypes={selectedFieldTypes}
+                      csvFieldNames={csvFieldNames}
+                      fieldTypes={fieldTypes}
+                    />
+                  </PhoneFrame>
                 </div>
               </CardContent>
             </Card>
