@@ -334,11 +334,6 @@ function QuickCreateTab({
       return
     }
 
-    if (!selectedUser) {
-      toast.error("Lütfen bir kullanıcı seçin")
-      return
-    }
-
     // Check for duplicates
     const uniqueKeys = [...new Set(publicKeys)]
     if (uniqueKeys.length < publicKeys.length) {
@@ -542,7 +537,7 @@ function QuickCreateTab({
           <div className="flex justify-end">
             <Button
               onClick={handleQuickCreate}
-              disabled={creating || publicKeys.length === 0 || !selectedUser}
+              disabled={creating || publicKeys.length === 0}
               size="lg"
             >
               {creating ? (
