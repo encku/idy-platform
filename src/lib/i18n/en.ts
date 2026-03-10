@@ -703,6 +703,34 @@ const en: Record<string, string> = {
   changeSource: "Source",
   applied: "Applied",
   noFieldChanges: "No field changes recorded for this sync",
+
+  // Bulk Import
+  fieldTypeMapping: "Field Type Mapping",
+  selectedFieldTypes: "Selected Field Types",
+  cardData: "Card Data",
+  checkStatus: "Check Status",
+  assignToIndividualUsers: "Assign each card to individual user",
+  userPasswordPlaceholder: "Common password for all users",
+  csvUploadHint: "When a CSV file is uploaded, data will be automatically added to the table.",
+
+  optional: "Optional",
+
+  // Quick Create
+  quickCreate: "Quick Create",
+  bulkImportTab: "Bulk Import",
+  quickCreateTab: "Quick Create",
+  cardType: "Card Type",
+  cardColor: "Card Color",
+  publicKeys: "Public Keys",
+  publicKeysPlaceholder: "Enter public keys (one per line)",
+  quickCreateHint: "Enter public keys one per line or upload a text/CSV file. Select card type and color, then create cards.",
+  createCards: "Create Cards",
+  cardTypeCard: "Card",
+  cardTypeTag: "Tag",
+  cardTypePhoneCard: "PhoneCard",
+  colorBlack: "Black",
+  colorWhite: "White",
+  colorHologram: "Hologram",
 }
 
 export default en

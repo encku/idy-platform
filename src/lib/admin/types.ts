@@ -126,14 +126,22 @@ export interface AdminCardDetail extends AdminCard {
 }
 
 export interface BulkImportPayload {
-  company_id?: number
-  user_id?: number
+  company_id?: number | null
+  user_id?: number | null
+  assign_to_individual_users?: boolean
   password?: string
+  profile_picture_url?: string | null
+  field_icons?: Record<number, string> | null
+  card_type_id?: number | null
+  color_id?: number | null
   cards: Array<{
     public_key: string
     name: string
-    email?: string
-    fields: Array<{ field_type_id: number; value: string }>
+    company?: string
+    title?: string
+    email?: string | null
+    user_id?: number | null
+    fields: Array<{ field_type_id: number; data: string; name?: string }>
   }>
 }
 

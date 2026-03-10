@@ -703,6 +703,34 @@ const tr: Record<string, string> = {
   changeSource: "Kaynak",
   applied: "Uygulandı",
   noFieldChanges: "Bu senkronizasyon için alan değişikliği kaydedilmedi",
+
+  // Bulk Import
+  fieldTypeMapping: "Field Type Eşleme",
+  selectedFieldTypes: "Seçili Field Type'lar",
+  cardData: "Kart Verileri",
+  checkStatus: "Kontrol Et",
+  assignToIndividualUsers: "Her kart ayrı kullanıcıya atanacak",
+  userPasswordPlaceholder: "Tüm kullanıcılar için ortak şifre",
+  csvUploadHint: "CSV dosyası yüklendiğinde veriler otomatik olarak tabloya eklenecektir.",
+
+  optional: "Opsiyonel",
+
+  // Quick Create
+  quickCreate: "Hızlı Oluştur",
+  bulkImportTab: "Toplu İçe Aktarım",
+  quickCreateTab: "Hızlı Oluştur",
+  cardType: "Kart Tipi",
+  cardColor: "Kart Rengi",
+  publicKeys: "Public Key'ler",
+  publicKeysPlaceholder: "Public key'leri girin (her satıra bir tane)",
+  quickCreateHint: "Public key'leri her satıra bir tane olacak şekilde girin veya metin/CSV dosyası yükleyin. Kart tipi ve rengini seçip kartları oluşturun.",
+  createCards: "Kartları Oluştur",
+  cardTypeCard: "Kart",
+  cardTypeTag: "Tag",
+  cardTypePhoneCard: "PhoneCard",
+  colorBlack: "Siyah",
+  colorWhite: "Beyaz",
+  colorHologram: "Hologram",
 }
 
 export default tr
