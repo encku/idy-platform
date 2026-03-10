@@ -6,7 +6,7 @@ export async function DELETE(
   { params }: { params: Promise<{ userId: string; cardId: string }> }
 ) {
   const { userId, cardId } = await params
-  return proxyRequest(request, `/company/viewer/${userId}/card/${cardId}`, {
+  return proxyRequest(request, `/admin/user/${userId}/viewer-cards/${cardId}`, {
     method: "DELETE",
   })
 }

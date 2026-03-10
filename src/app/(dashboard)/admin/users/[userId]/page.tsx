@@ -6,6 +6,7 @@ import { Pencil, ShieldOff, Loader2 } from "lucide-react"
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { UserDetailCard } from "@/components/admin/users/user-detail-card"
 import { UserCardsList } from "@/components/admin/users/user-cards-list"
+import { ViewerCardsList } from "@/components/admin/users/viewer-cards-list"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import {
@@ -107,9 +108,12 @@ export default function UserDetailPage() {
             {t("resetTwoFactor")}
           </Button>
         </div>
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">{t("userCards")}</h3>
-          <UserCardsList userId={user.id} />
+        <div className="space-y-8">
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">{t("userCards")}</h3>
+            <UserCardsList userId={user.id} />
+          </div>
+          <ViewerCardsList userId={user.id} />
         </div>
       </div>
 

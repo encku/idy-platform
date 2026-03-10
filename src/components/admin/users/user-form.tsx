@@ -1,21 +1,36 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useTranslation } from "@/lib/i18n/context"
-import type { AdminUser } from "@/lib/admin/types"
+import { apiClient } from "@/lib/api-client"
+import type { AdminUser, Company } from "@/lib/admin/types"
 
 interface UserFormProps {
   mode: "create" | "edit"
   initialData?: AdminUser
-  onSubmit: (data: Record<string, string | boolean>) => Promise<void>
+  onSubmit: (data: Record<string, string | boolean | number>) => Promise<void>
   saving: boolean
 }
+
+const ROLE_OPTIONS = [
+  { value: "admin", labelKey: "roleAdmin" },
+  { value: "company_admin", labelKey: "roleCompanyAdmin" },
+  { value: "read_only", labelKey: "roleReadOnly" },
+  { value: "viewer", labelKey: "roleViewer" },
+]
 
 export function UserForm({ mode, initialData, onSubmit, saving }: UserFormProps) {
   const { t } = useTranslation()
@@ -28,10 +43,22 @@ export function UserForm({ mode, initialData, onSubmit, saving }: UserFormProps)
   const [isHidden, setIsHidden] = useState(initialData?.is_hidden || false)
   const [password, setPassword] = useState("")
   const [passwordConfirmation, setPasswordConfirmation] = useState("")
+  const [role, setRole] = useState("company_admin")
+  const [companyId, setCompanyId] = useState<number | null>(null)
+  const [companies, setCompanies] = useState<Company[]>([])
+
+  useEffect(() => {
+    if (mode === "create") {
+      apiClient
+        .get<{ data: Company[] }>("/api/admin/companies?limit=200")
+        .then((res) => setCompanies(res.data || []))
+        .catch(() => {})
+    }
+  }, [mode])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const data: Record<string, string | boolean> = {
+    const data: Record<string, string | boolean | number> = {
       name,
       email,
       phone,
@@ -42,6 +69,8 @@ export function UserForm({ mode, initialData, onSubmit, saving }: UserFormProps)
     if (mode === "create") {
       data.password = password
       data.password_confirmation = passwordConfirmation
+      data.role = role
+      if (companyId) data.company_id = companyId
     }
     await onSubmit(data)
   }
@@ -118,6 +147,54 @@ export function UserForm({ mode, initialData, onSubmit, saving }: UserFormProps)
           </div>
         </div>
       </div>
+
+      {/* Role & Company — create mode only */}
+      {mode === "create" && (
+        <>
+          <Separator />
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              {t("roleAndCompany")}
+            </h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="role">{t("role")} *</Label>
+                <Select value={role} onValueChange={setRole}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ROLE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {t(opt.labelKey)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="company">{t("company")}</Label>
+                <Select
+                  value={companyId ? String(companyId) : "__none__"}
+                  onValueChange={(v) => setCompanyId(v === "__none__" ? null : Number(v))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("selectCompany")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">{t("noCompany")}</SelectItem>
+                    {companies.map((c) => (
+                      <SelectItem key={c.id} value={String(c.id)}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Password — create mode only */}
       {mode === "create" && (

@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ userId: string }> }
 ) {
   const { userId } = await params
-  return proxyRequest(request, `/company/viewer/${userId}/cards`)
+  return proxyRequest(request, `/admin/user/${userId}/viewer-cards`)
 }
 
 export async function POST(
@@ -15,7 +15,7 @@ export async function POST(
 ) {
   const { userId } = await params
   const body = await request.text()
-  return proxyRequest(request, `/company/viewer/${userId}/card`, {
+  return proxyRequest(request, `/admin/user/${userId}/viewer-cards`, {
     method: "POST",
     body,
     headers: { "Content-Type": "application/json" },

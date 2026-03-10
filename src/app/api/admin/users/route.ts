@@ -8,9 +8,11 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get("search") || ""
   const orderBy = searchParams.get("order_by") || "desc"
   const companyId = searchParams.get("company_id") || ""
+  const role = searchParams.get("role") || ""
 
   const query = new URLSearchParams({ page, limit, search, order_by: orderBy })
   if (companyId) query.set("company_id", companyId)
+  if (role) query.set("role", role)
   return proxyRequest(request, `/admin/user?${query}`)
 }
 

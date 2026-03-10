@@ -55,6 +55,8 @@ export interface CreateUserPayload {
   email: string
   password: string
   password_confirmation: string
+  role?: string
+  company_id?: number
   phone?: string
   title?: string
   location?: string
@@ -274,30 +276,6 @@ export interface FieldType {
 
 export interface FieldTypeGroup {
   [groupName: string]: FieldType[]
-}
-
-// ─── Viewer Types ───
-
-export interface Viewer {
-  id: number
-  name: string
-  email: string
-  company_id: number
-}
-
-export interface ViewerCard {
-  id: number
-  public_key: string
-  user_preferred_name: string
-  card_type_id: number
-  color_id: number
-}
-
-export interface CreateViewerPayload {
-  name: string
-  email: string
-  password: string
-  company_id: number
 }
 
 // ─── Subscription Types ───
