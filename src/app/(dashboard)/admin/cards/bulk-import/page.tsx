@@ -358,16 +358,19 @@ function QuickCreateTab({
       }
 
       const res = await apiClient.post<{
-        created_cards: number
-        updated_cards: number
-        errors?: string[]
+        data: {
+          created_cards: number
+          updated_cards: number
+          errors?: string[]
+        }
       }>("/api/admin/cards/bulk-import", payload)
 
+      const result = res.data
       toast.success(
-        `${res.created_cards} kart oluşturuldu, ${res.updated_cards} kart güncellendi`
+        `${result.created_cards} kart oluşturuldu, ${result.updated_cards} kart güncellendi`
       )
 
-      if (res.errors?.length) console.warn("Import errors:", res.errors)
+      if (result.errors?.length) console.warn("Import errors:", result.errors)
 
       // Reset
       setPublicKeysText("")
@@ -1393,16 +1396,19 @@ export default function BulkImportPage() {
       }
 
       const res = await apiClient.post<{
-        created_cards: number
-        updated_cards: number
-        errors?: string[]
+        data: {
+          created_cards: number
+          updated_cards: number
+          errors?: string[]
+        }
       }>("/api/admin/cards/bulk-import", payload)
 
+      const result = res.data
       toast.success(
-        `${res.created_cards} kart oluşturuldu, ${res.updated_cards} kart güncellendi`
+        `${result.created_cards} kart oluşturuldu, ${result.updated_cards} kart güncellendi`
       )
 
-      if (res.errors?.length) console.warn("Import errors:", res.errors)
+      if (result.errors?.length) console.warn("Import errors:", result.errors)
 
       // Reset
       setUserPassword("")
