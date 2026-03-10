@@ -243,9 +243,8 @@ function LoginForm() {
       {/* Left - Spline 3D Card Animation */}
       <div className="relative hidden lg:flex flex-col bg-foreground text-background overflow-hidden">
         {/* Logo */}
-        <div className="absolute top-12 left-12 z-10 flex items-center gap-3">
+        <div className="absolute top-12 left-12 z-10">
           <Image src="/logo.png" alt="idycard" width={40} height={40} className="size-10 dark:invert" />
-          <span className="text-xl font-semibold tracking-tight">idycard</span>
         </div>
 
         {/* Spline Scene — lazy loaded after form is interactive */}
@@ -266,11 +265,8 @@ function LoginForm() {
       <div className="flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
-          <div className="flex items-center gap-3 lg:hidden">
+          <div className="lg:hidden">
             <Image src="/logo.png" alt="idycard" width={36} height={36} className="size-9" />
-            <span className="text-lg font-semibold tracking-tight">
-              idycard
-            </span>
           </div>
 
           {twoFactorRequired ? (
