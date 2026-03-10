@@ -13,7 +13,7 @@ export default function CreateUserPage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
 
-  async function handleSubmit(data: Record<string, string | boolean>) {
+  async function handleSubmit(data: Record<string, string | boolean | number>) {
     setSaving(true)
     try {
       await apiClient.post("/api/admin/users", data)

@@ -36,7 +36,7 @@ export default function EditUserPage() {
     fetchUser()
   }, [fetchUser])
 
-  async function handleSubmit(data: Record<string, string | boolean>) {
+  async function handleSubmit(data: Record<string, string | boolean | number>) {
     setSaving(true)
     try {
       await apiClient.put(`/api/admin/users/${params.userId}`, data)
