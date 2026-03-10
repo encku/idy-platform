@@ -714,6 +714,9 @@ const tr: Record<string, string> = {
   assignToIndividualUsers: "Her kart ayrı kullanıcıya atanacak",
   userPasswordPlaceholder: "Tüm kullanıcılar için ortak şifre",
   csvUploadHint: "CSV dosyası yüklendiğinde veriler otomatik olarak tabloya eklenecektir.",
+  dragDropOrClick: "Dosyayı buraya sürükleyin veya tıklayıp seçin",
+  dropFileHere: "Dosyayı bırakın...",
+  clickOrDropToReplace: "Değiştirmek için tıklayın veya sürükleyin",
 
   optional: "Opsiyonel",
 

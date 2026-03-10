@@ -714,6 +714,9 @@ const en: Record<string, string> = {
   assignToIndividualUsers: "Assign each card to individual user",
   userPasswordPlaceholder: "Common password for all users",
   csvUploadHint: "When a CSV file is uploaded, data will be automatically added to the table.",
+  dragDropOrClick: "Drag & drop a file here, or click to browse",
+  dropFileHere: "Drop file here...",
+  clickOrDropToReplace: "Click or drop to replace",
 
   optional: "Optional",
 

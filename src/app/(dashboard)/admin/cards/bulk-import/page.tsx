@@ -27,6 +27,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { PhoneFrame } from "@/components/admin/phone-frame"
+import { useAdminContext } from "@/components/admin/admin-layout-shell"
 import { apiClient } from "@/lib/api-client"
 import { useTranslation } from "@/lib/i18n/context"
 import { toast } from "sonner"
@@ -43,7 +44,6 @@ import {
   Zap,
   Smartphone,
   ImageIcon,
-  Eye,
 } from "lucide-react"
 import { CardContent as CardPreviewContent } from "@/app/[cardId]/card-content"
 import type { CardProfile, CardField } from "@/lib/types"
@@ -658,6 +658,7 @@ function QuickCreateTab({
 
 export default function BulkImportPage() {
   const { t } = useTranslation()
+  const { setPreviewOverride, setContentFullWidth } = useAdminContext()
 
   // Company/User Selection
   const [selectedCompany, setSelectedCompany] = useState<string>("")
@@ -695,6 +696,8 @@ export default function BulkImportPage() {
   // CSV
   const [csvFile, setCsvFile] = useState<File | null>(null)
   const [csvParseErrors, setCsvParseErrors] = useState<string[]>([])
+  const [isDragging, setIsDragging] = useState(false)
+  const dragCounterRef = useRef(0)
 
   // Profile Picture
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null)
@@ -703,6 +706,45 @@ export default function BulkImportPage() {
 
   // Preview
   const [previewRowIndex, setPreviewRowIndex] = useState<number | null>(null)
+
+  // ─── Right Panel Preview Override ───
+
+  const previewRow = previewRowIndex !== null ? tableRows[previewRowIndex] : null
+
+  useEffect(() => {
+    if (previewRow) {
+      setPreviewOverride(
+        <div className="hidden xl:flex w-[420px] flex-col items-center border-l bg-muted/30 p-6 shrink-0">
+          <p className="mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            {t("mobilePreview")}
+          </p>
+          <p className="mb-4 text-xs text-muted-foreground truncate max-w-[300px]">
+            #{(previewRowIndex ?? 0) + 1} {previewRow.name || previewRow.publicKey}
+          </p>
+          <PhoneFrame badge={{ label: t("draft"), variant: "draft" }}>
+            <BulkCardPreview
+              row={previewRow}
+              profilePictureUrl={profilePictureUrl}
+              selectedFieldTypes={selectedFieldTypes}
+              csvFieldNames={csvFieldNames}
+              fieldTypes={fieldTypes}
+            />
+          </PhoneFrame>
+        </div>
+      )
+    } else {
+      setPreviewOverride(null)
+    }
+  }, [previewRow, previewRowIndex, profilePictureUrl, selectedFieldTypes, csvFieldNames, fieldTypes, setPreviewOverride, t])
+
+  // Full-width content + clear overrides on unmount
+  useEffect(() => {
+    setContentFullWidth(true)
+    return () => {
+      setPreviewOverride(null)
+      setContentFullWidth(false)
+    }
+  }, [setPreviewOverride, setContentFullWidth])
 
   // Loading States
   const [loadingFieldTypes, setLoadingFieldTypes] = useState(false)
@@ -1357,10 +1399,7 @@ export default function BulkImportPage() {
 
   // ─── Handle CSV Upload ───
 
-  async function handleCSVUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  async function processCSVFile(file: File) {
     setCsvFile(file)
     setCsvParseErrors([])
 
@@ -1413,6 +1452,50 @@ export default function BulkImportPage() {
       }
     }
     reader.readAsText(file)
+  }
+
+  function handleCSVUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) processCSVFile(file)
+  }
+
+  const ACCEPTED_EXTENSIONS = [".csv", ".tsv", ".tab", ".txt"]
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    dragCounterRef.current = 0
+
+    const file = e.dataTransfer.files[0]
+    if (!file) return
+
+    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf("."))
+    if (!ACCEPTED_EXTENSIONS.includes(ext)) {
+      toast.error("Sadece CSV, TSV veya TXT dosyaları kabul edilir")
+      return
+    }
+
+    processCSVFile(file)
+  }
+
+  function handleDragEnter(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounterRef.current++
+    if (dragCounterRef.current === 1) setIsDragging(true)
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounterRef.current--
+    if (dragCounterRef.current === 0) setIsDragging(false)
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault()
+    e.stopPropagation()
   }
 
   // ─── Check All Status ───
@@ -1727,23 +1810,54 @@ export default function BulkImportPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                <Upload className="size-8 mx-auto mb-3 text-muted-foreground" />
+              <div
+                onDrop={handleDrop}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onClick={() => fileInputRef.current?.click()}
+                className={`relative cursor-pointer rounded-lg border-2 border-dashed p-10 text-center transition-colors ${
+                  isDragging
+                    ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                    : "border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-muted/50"
+                }`}
+              >
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept=".csv,.tsv,.tab,text/csv,text/tab-separated-values"
                   onChange={handleCSVUpload}
-                  className="max-w-xs mx-auto block text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
+                  className="hidden"
                 />
-                {csvFile && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {csvFile.name} ({(csvFile.size / 1024).toFixed(1)} KB)
-                  </p>
+
+                {isDragging ? (
+                  <div className="pointer-events-none">
+                    <Upload className="size-10 mx-auto mb-3 text-primary animate-bounce" />
+                    <p className="text-sm font-medium text-primary">{t("dropFileHere")}</p>
+                  </div>
+                ) : csvFile ? (
+                  <div>
+                    <FileSpreadsheet className="size-10 mx-auto mb-3 text-green-500" />
+                    <p className="text-sm font-medium">{csvFile.name}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {(csvFile.size / 1024).toFixed(1)} KB
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {t("clickOrDropToReplace")}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <Upload className="size-10 mx-auto mb-3 text-muted-foreground" />
+                    <p className="text-sm font-medium">{t("dragDropOrClick")}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      CSV, TSV, TXT
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {t("csvUploadHint")}
+                    </p>
+                  </div>
                 )}
-                <p className="text-xs text-muted-foreground mt-2">
-                  {t("csvUploadHint")}
-                </p>
               </div>
 
               {csvParseErrors.length > 0 && (
@@ -1886,7 +2000,12 @@ export default function BulkImportPage() {
                     {tableRows.map((row, index) => (
                       <TableRow
                         key={`row-${index}`}
-                        className={!row.isValid ? "bg-destructive/5" : ""}
+                        className={`cursor-pointer ${previewRowIndex === index ? "bg-primary/5 ring-1 ring-inset ring-primary/20" : ""} ${!row.isValid ? "bg-destructive/5" : ""}`}
+                        onClick={(e) => {
+                          const el = e.target as HTMLElement
+                          if (el.tagName === "INPUT" || el.tagName === "BUTTON" || el.closest("button")) return
+                          setPreviewRowIndex(previewRowIndex === index ? null : index)
+                        }}
                       >
                         <TableCell className="text-center text-xs text-muted-foreground font-medium sticky left-0 bg-background z-10">
                           {row.rowNumber}
@@ -1997,26 +2116,15 @@ export default function BulkImportPage() {
 
                         {/* Actions */}
                         <TableCell>
-                          <div className="flex gap-0.5">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className={`size-7 ${previewRowIndex === index ? "bg-primary/10 text-primary" : ""}`}
-                              onClick={() => setPreviewRowIndex(previewRowIndex === index ? null : index)}
-                              title={t("preview")}
-                            >
-                              <Eye className="size-3.5" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-7"
-                              onClick={() => removeTableRow(index)}
-                              disabled={tableRows.length <= 1}
-                            >
-                              <Trash2 className="size-3.5 text-destructive" />
-                            </Button>
-                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
+                            onClick={() => removeTableRow(index)}
+                            disabled={tableRows.length <= 1}
+                          >
+                            <Trash2 className="size-3.5 text-destructive" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -2050,40 +2158,6 @@ export default function BulkImportPage() {
             </CardContent>
           </Card>
 
-          {/* Mobile Preview */}
-          {previewRowIndex !== null && tableRows[previewRowIndex] && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">
-                    <Smartphone className="inline size-4 mr-2" />
-                    {t("mobilePreview")} - #{previewRowIndex + 1} {tableRows[previewRowIndex].name || tableRows[previewRowIndex].publicKey}
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-7"
-                    onClick={() => setPreviewRowIndex(null)}
-                  >
-                    <X className="size-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-center">
-                  <PhoneFrame badge={{ label: t("draft"), variant: "draft" }}>
-                    <BulkCardPreview
-                      row={tableRows[previewRowIndex]}
-                      profilePictureUrl={profilePictureUrl}
-                      selectedFieldTypes={selectedFieldTypes}
-                      csvFieldNames={csvFieldNames}
-                      fieldTypes={fieldTypes}
-                    />
-                  </PhoneFrame>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </TabsContent>
       </Tabs>
     </div>

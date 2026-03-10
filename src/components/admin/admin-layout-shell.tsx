@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, createContext, useContext } from "react"
+import { useState, createContext, useContext, type ReactNode } from "react"
 import { usePathname } from "next/navigation"
 import { AdminSidebar } from "./admin-sidebar"
 import { PhonePreview } from "./phone-preview"
@@ -11,11 +11,19 @@ import { Toaster } from "@/components/ui/sonner"
 interface AdminContextValue {
   selectedCardPublicKey: string | null
   setSelectedCardPublicKey: (key: string | null) => void
+  previewOverride: ReactNode | null
+  setPreviewOverride: (node: ReactNode | null) => void
+  contentFullWidth: boolean
+  setContentFullWidth: (fullWidth: boolean) => void
 }
 
 const AdminContext = createContext<AdminContextValue>({
   selectedCardPublicKey: null,
   setSelectedCardPublicKey: () => {},
+  previewOverride: null,
+  setPreviewOverride: () => {},
+  contentFullWidth: false,
+  setContentFullWidth: () => {},
 })
 
 export function useAdminContext() {
@@ -31,12 +39,14 @@ export function AdminLayoutShell({
   const [selectedCardPublicKey, setSelectedCardPublicKey] = useState<
     string | null
   >(null)
+  const [previewOverride, setPreviewOverride] = useState<ReactNode | null>(null)
+  const [contentFullWidth, setContentFullWidth] = useState(false)
   const pathname = usePathname()
   const isAdminRoute = pathname.startsWith("/admin")
 
   return (
     <AdminContext.Provider
-      value={{ selectedCardPublicKey, setSelectedCardPublicKey }}
+      value={{ selectedCardPublicKey, setSelectedCardPublicKey, previewOverride, setPreviewOverride, contentFullWidth, setContentFullWidth }}
     >
       <div className="flex h-svh overflow-hidden bg-background">
         {/* Left: Sidebar */}
@@ -48,7 +58,7 @@ export function AdminLayoutShell({
         {/* Center: Content */}
         <main className="flex-1 overflow-y-auto">
           {isAdminRoute ? (
-            <div className="p-6 max-w-6xl">{children}</div>
+            <div className={`p-6 ${contentFullWidth ? "" : "max-w-6xl"}`}>{children}</div>
           ) : (
             <div className="flex flex-col min-h-full mx-auto max-w-md">
               <div className="flex-1">{children}</div>
@@ -57,8 +67,8 @@ export function AdminLayoutShell({
           )}
         </main>
 
-        {/* Right: Phone Preview */}
-        <PhonePreview selectedCardPublicKey={selectedCardPublicKey} />
+        {/* Right: Phone Preview (or page override) */}
+        {previewOverride || <PhonePreview selectedCardPublicKey={selectedCardPublicKey} />}
 
         <Toaster position="top-center" />
       </div>
