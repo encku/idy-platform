@@ -6,5 +6,10 @@ export async function GET(
   { params }: { params: Promise<{ companyId: string }> }
 ) {
   const { companyId } = await params
-  return proxyRequest(request, `/company/card?company_id=${companyId}`)
+  const search = request.nextUrl.searchParams
+  const query = new URLSearchParams({ company_id: companyId })
+  if (search.get("page")) query.set("page", search.get("page")!)
+  if (search.get("limit")) query.set("limit", search.get("limit")!)
+  if (search.get("search")) query.set("search", search.get("search")!)
+  return proxyRequest(request, `/company/card?${query}`)
 }

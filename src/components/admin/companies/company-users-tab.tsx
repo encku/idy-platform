@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useMemo, useState } from "react"
 import {
   Table,
   TableBody,
@@ -10,13 +10,16 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
+import { Pagination } from "@/components/admin/pagination"
 import { AssignUserDialog } from "./assign-user-dialog"
 import { apiClient } from "@/lib/api-client"
+import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query"
 import { useTranslation } from "@/lib/i18n/context"
 import { toast } from "sonner"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, Search } from "lucide-react"
 import type { CompanyUserAssignment } from "@/lib/admin/types"
 
 interface CompanyUsersTabProps {
@@ -25,29 +28,23 @@ interface CompanyUsersTabProps {
 
 export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
   const { t } = useTranslation()
-  const [assignments, setAssignments] = useState<CompanyUserAssignment[]>([])
-  const [loading, setLoading] = useState(true)
   const [showAssign, setShowAssign] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<CompanyUserAssignment | null>(null)
   const [deleting, setDeleting] = useState(false)
 
-  const fetchUsers = useCallback(async () => {
-    setLoading(true)
-    try {
-      const res = await apiClient.get<{ data: CompanyUserAssignment[] }>(
-        `/api/admin/companies/${companyId}/users`
-      )
-      setAssignments(res.data || [])
-    } catch {
-      setAssignments([])
-    } finally {
-      setLoading(false)
-    }
-  }, [companyId])
-
-  useEffect(() => {
-    fetchUsers()
-  }, [fetchUsers])
+  const {
+    data: assignments,
+    total,
+    page,
+    totalPages,
+    loading,
+    search,
+    setPage,
+    setSearch,
+    refetch,
+  } = usePaginatedQuery<CompanyUserAssignment>({
+    url: `/api/admin/companies/${companyId}/users`,
+  })
 
   async function handleRemove() {
     if (!deleteTarget) return
@@ -58,7 +55,7 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
       )
       toast.success(t("removeAssignmentSuccess"))
       setDeleteTarget(null)
-      fetchUsers()
+      refetch()
     } catch {
       toast.error(t("errorOccurred"))
     } finally {
@@ -68,7 +65,16 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-3">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("searchUsers")}
+            className="pl-9"
+          />
+        </div>
         <Button size="sm" onClick={() => setShowAssign(true)}>
           <Plus className="size-4 mr-2" />
           {t("assignUser")}
@@ -125,11 +131,19 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
         </div>
       )}
 
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        pageSize={20}
+        onPageChange={setPage}
+      />
+
       <AssignUserDialog
         open={showAssign}
         onOpenChange={setShowAssign}
         companyId={companyId}
-        onAssigned={fetchUsers}
+        onAssigned={refetch}
       />
 
       <ConfirmDialog
