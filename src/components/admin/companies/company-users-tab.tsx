@@ -37,7 +37,7 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
       const res = await apiClient.get<{ data: CompanyUserAssignment[] }>(
         `/api/admin/companies/${companyId}/users`
       )
-      setAssignments((res.data || []).filter((a) => a.user))
+      setAssignments(res.data || [])
     } catch {
       setAssignments([])
     } finally {
@@ -100,13 +100,13 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
               {assignments.map((a) => (
                 <TableRow key={a.id}>
                   <TableCell className="font-medium">
-                    {a.user.name}
+                    {a.user_name}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {a.user.email}
+                    {a.user_email}
                   </TableCell>
                   <TableCell className="text-sm">
-                    {a.user.role_name}
+                    {a.role_name}
                   </TableCell>
                   <TableCell>
                     <Button

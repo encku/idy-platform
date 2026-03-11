@@ -172,15 +172,20 @@ export interface CompanyDetail extends Company {
 }
 
 export interface CompanyCardAssignment {
-  id: number
-  company_id: number
-  card: AdminCard
+  assignment_id: number
+  card_id: number
+  public_key: string
+  user_preferred_name: string
+  user_name: string
 }
 
 export interface CompanyUserAssignment {
   id: number
+  user_id: number
   company_id: number
-  user: AdminUser
+  user_name: string
+  user_email: string
+  role_name: string
 }
 
 export interface CreateCompanyPayload {

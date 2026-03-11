@@ -37,7 +37,7 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
       const res = await apiClient.get<{ data: CompanyCardAssignment[] }>(
         `/api/admin/companies/${companyId}/cards`
       )
-      setAssignments((res.data || []).filter((a) => a.card))
+      setAssignments(res.data || [])
     } catch {
       setAssignments([])
     } finally {
@@ -54,7 +54,7 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
     setDeleting(true)
     try {
       await apiClient.del(
-        `/api/admin/companies/card-assignment/${deleteTarget.id}`
+        `/api/admin/companies/card-assignment/${deleteTarget.assignment_id}`
       )
       toast.success(t("removeAssignmentSuccess"))
       setDeleteTarget(null)
@@ -98,15 +98,15 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
             </TableHeader>
             <TableBody>
               {assignments.map((a) => (
-                <TableRow key={a.id}>
+                <TableRow key={a.assignment_id}>
                   <TableCell className="font-medium">
-                    {a.card.card_user_preferred_name || a.card.card_public_key}
+                    {a.user_preferred_name || a.public_key}
                   </TableCell>
                   <TableCell className="text-xs font-mono text-muted-foreground">
-                    {a.card.card_public_key}
+                    {a.public_key}
                   </TableCell>
                   <TableCell className="text-sm">
-                    {a.card.user_name}
+                    {a.user_name}
                   </TableCell>
                   <TableCell>
                     <Button
