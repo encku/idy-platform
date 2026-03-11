@@ -373,7 +373,7 @@ function QuickCreateTab({
           setLocalUsers(
             (res.data || []).map((u) => {
               let label = `${u.name} (${u.email})`
-              if (u.card_count !== undefined) label += ` - ${u.card_count} kart`
+              if (u.card_count !== undefined) label += ` - ${u.card_count} ${t("bulkImport.card")}`
               if (u.role_name?.trim()) label += ` [${u.role_name}]`
               return { value: u.id, label }
             })
@@ -415,14 +415,14 @@ function QuickCreateTab({
         if (key) keys.push(key)
       }
       setPublicKeysText(keys.join("\n"))
-      toast.success(`${keys.length} public key yüklendi`)
+      toast.success(t("bulkImport.publicKeysLoaded").replace("{count}", String(keys.length)))
     }
     reader.readAsText(file)
   }
 
   async function handleQuickCreate() {
     if (publicKeys.length === 0) {
-      toast.error("En az bir public key girin")
+      toast.error(t("bulkImport.enterAtLeastOneKey"))
       return
     }
 
@@ -430,7 +430,7 @@ function QuickCreateTab({
     const uniqueKeys = [...new Set(publicKeys)]
     if (uniqueKeys.length < publicKeys.length) {
       toast.warning(
-        `${publicKeys.length - uniqueKeys.length} tekrarlanan public key silindi`
+        t("bulkImport.duplicateKeysRemoved").replace("{count}", String(publicKeys.length - uniqueKeys.length))
       )
     }
 
@@ -459,7 +459,7 @@ function QuickCreateTab({
 
       const result = res.data
       toast.success(
-        `${result.created_cards} kart oluşturuldu, ${result.updated_cards} kart güncellendi`
+        t("bulkImport.importSuccess").replace("{created}", String(result.created_cards)).replace("{updated}", String(result.updated_cards))
       )
 
       if (result.errors?.length) console.warn("Import errors:", result.errors)
@@ -472,7 +472,7 @@ function QuickCreateTab({
       console.error("Quick create error:", err)
       toast.error(
         (err as { message?: string })?.message ||
-          "Kartlar oluşturulurken bir hata oluştu"
+          t("bulkImport.createError")
       )
     } finally {
       setCreating(false)
@@ -568,7 +568,7 @@ function QuickCreateTab({
             <Input
               value={quickName}
               onChange={(e) => setQuickName(e.target.value)}
-              placeholder="Tüm kartlar için ortak isim (boş bırakılırsa public key kullanılır)"
+              placeholder={t("bulkImport.commonNamePlaceholder")}
             />
           </div>
 
@@ -819,7 +819,7 @@ export default function BulkImportPage() {
       setUsers(
         (res.data || []).map((u) => {
           let label = `${u.name} (${u.email})`
-          if (u.card_count !== undefined) label += ` - ${u.card_count} kart`
+          if (u.card_count !== undefined) label += ` - ${u.card_count} ${t("bulkImport.card")}`
           if (u.role_name?.trim()) label += ` [${u.role_name}]`
           return { value: u.id, label }
         })
@@ -872,13 +872,13 @@ export default function BulkImportPage() {
 
         // Public Key
         if (!row.publicKey?.trim()) {
-          errors.publicKey = "Public key zorunludur"
+          errors.publicKey = t("bulkImport.publicKeyRequired")
           isValid = false
         } else if (row.publicKey.length < 3) {
-          errors.publicKey = "Public key çok kısa"
+          errors.publicKey = t("bulkImport.publicKeyTooShort")
           isValid = false
         } else if (duplicatePks.has(row.publicKey.trim().toLowerCase())) {
-          errors.publicKey = `Bu public key ${pkCount[row.publicKey.trim().toLowerCase()]} kez kullanılmış`
+          errors.publicKey = t("bulkImport.publicKeyDuplicate").replace("{count}", String(pkCount[row.publicKey.trim().toLowerCase()]))
           isValid = false
         } else if (row.serverStatus) {
           if (
@@ -889,37 +889,37 @@ export default function BulkImportPage() {
             const assignedId = Number(row.serverStatus.assigned_user_id)
             const selectedId = Number(selUser)
             if (assignedId === selectedId) {
-              warnings.publicKey = "Kart zaten bu kullanıcıya atanmış"
+              warnings.publicKey = t("bulkImport.cardAlreadyAssignedToUser")
             } else {
-              errors.publicKey = `Kart başka bir kullanıcıya atanmış (${row.serverStatus.assigned_user_name || "ID: " + assignedId})`
+              errors.publicKey = t("bulkImport.cardAssignedToOther").replace("{user}", row.serverStatus.assigned_user_name || "ID: " + assignedId)
               isValid = false
             }
           } else if (
             row.serverStatus.assigned_user_id &&
             indivMode
           ) {
-            errors.publicKey = `Kart zaten bir kullanıcıya atanmış (${row.serverStatus.assigned_user_name || "ID: " + row.serverStatus.assigned_user_id})`
+            errors.publicKey = t("bulkImport.cardAlreadyAssigned").replace("{user}", row.serverStatus.assigned_user_name || "ID: " + row.serverStatus.assigned_user_id)
             isValid = false
           } else if (
             row.serverStatus.exists &&
             row.serverStatus.assigned_company_id &&
             !row.serverStatus.assigned_user_id
           ) {
-            warnings.publicKey = "Zaten bir şirkete atanmış"
+            warnings.publicKey = t("bulkImport.alreadyAssignedToCompany")
           } else if (
             row.serverStatus.exists &&
             !row.serverStatus.assigned_user_id &&
             !row.serverStatus.assigned_company_id
           ) {
-            warnings.publicKey = "Kart mevcut, güncellenecek"
+            warnings.publicKey = t("bulkImport.cardExistsWillUpdate")
           } else if (!row.serverStatus.exists) {
-            warnings.publicKey = "Yeni kart oluşturulacak"
+            warnings.publicKey = t("bulkImport.newCardWillCreate")
           }
         }
 
         // Name
         if (!row.name?.trim()) {
-          errors.name = "İsim zorunludur"
+          errors.name = t("bulkImport.nameRequired")
           isValid = false
         }
 
@@ -930,12 +930,12 @@ export default function BulkImportPage() {
             const ftId = getFieldTypeIdFromKey(fieldKey, sft)
             if (ftId !== 19) return
             if (row.emailStatus!.exists && row.emailStatus!.has_card) {
-              errors[`field_${fieldKey}`] = `Bu email zaten kayıtlı (${row.emailStatus!.user_name})`
+              errors[`field_${fieldKey}`] = t("bulkImport.emailAlreadyRegistered").replace("{user}", row.emailStatus!.user_name || "")
               isValid = false
             } else if (row.emailStatus!.exists && !row.emailStatus!.has_card) {
-              warnings[`field_${fieldKey}`] = `Mevcut kullanıcıya kart atanacak (${row.emailStatus!.user_name})`
+              warnings[`field_${fieldKey}`] = t("bulkImport.cardWillAssignToExisting").replace("{user}", row.emailStatus!.user_name || "")
             } else if (!row.emailStatus!.exists) {
-              warnings[`field_${fieldKey}`] = "Yeni kullanıcı oluşturulacak"
+              warnings[`field_${fieldKey}`] = t("bulkImport.newUserWillCreate")
             }
           })
         }
@@ -949,11 +949,11 @@ export default function BulkImportPage() {
             if (ftId === 19 && data.trim()) hasEmail = true
           })
           if (!hasEmail) {
-            errors.email = "Email zorunludur (Her kart ayrı kullanıcıya modu)"
+            errors.email = t("bulkImport.emailRequired")
             isValid = false
             Object.keys(row.fields).forEach((fieldKey) => {
               const ftId = getFieldTypeIdFromKey(fieldKey, sft)
-              if (ftId === 19) errors[`field_${fieldKey}`] = "Email zorunludur"
+              if (ftId === 19) errors[`field_${fieldKey}`] = t("bulkImport.emailFieldRequired")
             })
           }
         }
@@ -964,22 +964,22 @@ export default function BulkImportPage() {
           const ftId = getFieldTypeIdFromKey(fieldKey, sft)
           if (!ftId) return
           if (ftId === 19 && !validateEmail(value)) {
-            errors[`field_${fieldKey}`] = "Geçersiz e-posta adresi"
+            errors[`field_${fieldKey}`] = t("bulkImport.invalidEmail")
             isValid = false
           }
           if (ftId === 15 && !validateURL(value)) {
-            errors[`field_${fieldKey}`] = "Geçersiz URL"
+            errors[`field_${fieldKey}`] = t("bulkImport.invalidUrl")
             isValid = false
           }
           if ((ftId === 2 || ftId === 13) && !validatePhone(value)) {
-            warnings[`field_${fieldKey}`] = "Telefon formatı kontrol edilmeli"
+            warnings[`field_${fieldKey}`] = t("bulkImport.phoneFormatCheck")
           }
         })
 
         return { ...row, errors, warnings, isValid }
       })
     },
-    []
+    [t]
   )
 
   const debouncedValidate = useCallback(() => {
@@ -1246,7 +1246,7 @@ export default function BulkImportPage() {
     const lines = csvText.split("\n").filter((line) => line.trim() !== "")
     if (lines.length < 3) {
       throw new Error(
-        "Dosya en az 2 header satırı (field name ve field type ID) ve bir veri satırı içermelidir"
+        t("bulkImport.csvMinRows")
       )
     }
 
@@ -1365,7 +1365,7 @@ export default function BulkImportPage() {
       }
 
       if (!publicKey) {
-        parseErrors.push(`Satır ${rowIdx + 1}: Public key bulunamadı`)
+        parseErrors.push(t("bulkImport.csvPublicKeyNotFound").replace("{row}", String(rowIdx + 1)))
         continue
       }
 
@@ -1434,21 +1434,21 @@ export default function BulkImportPage() {
         )
 
         if (parsedRows.length === 0) {
-          toast.warning("CSV dosyasında geçerli veri satırı bulunamadı")
+          toast.warning(t("bulkImport.csvNoValidRows"))
         } else {
           const validCount = updatedRows.filter((r) => r.isValid).length
           const invalidCount = parsedRows.length - validCount
           if (invalidCount > 0) {
             toast.warning(
-              `${parsedRows.length} satır parse edildi. ${validCount} geçerli, ${invalidCount} hatalı.`
+              t("bulkImport.csvParsedWithErrors").replace("{total}", String(parsedRows.length)).replace("{valid}", String(validCount)).replace("{invalid}", String(invalidCount))
             )
           } else {
-            toast.success(`${parsedRows.length} satır başarıyla parse edildi.`)
+            toast.success(t("bulkImport.csvParsedSuccess").replace("{count}", String(parsedRows.length)))
           }
         }
       } catch (err) {
         console.error("CSV parse error:", err)
-        toast.error((err as Error).message || "CSV dosyası parse edilemedi")
+        toast.error((err as Error).message || t("bulkImport.csvParseFailed"))
       }
     }
     reader.readAsText(file)
@@ -1472,7 +1472,7 @@ export default function BulkImportPage() {
 
     const ext = file.name.toLowerCase().slice(file.name.lastIndexOf("."))
     if (!ACCEPTED_EXTENSIONS.includes(ext)) {
-      toast.error("Sadece CSV, TSV veya TXT dosyaları kabul edilir")
+      toast.error(t("bulkImport.onlyCsvTsvTxt"))
       return
     }
 
@@ -1520,20 +1520,20 @@ export default function BulkImportPage() {
     const invalidRows = validated.filter((row) => !row.isValid || !row.publicKey || !row.name)
     if (invalidRows.length > 0) {
       toast.error(
-        `${invalidRows.length} hatalı satır var. Tüm hataları düzeltmeden import yapılamaz.`
+        t("bulkImport.invalidRowsError").replace("{count}", String(invalidRows.length))
       )
       return
     }
 
     if (!assignToIndividualUsers && !selectedUser) {
       toast.error(
-        "Kartlar mutlaka bir kullanıcıya atanmalı. Lütfen kullanıcı seçin veya 'Her kart ayrı kullanıcıya' modunu aktif edin."
+        t("bulkImport.userRequired")
       )
       return
     }
 
     if (assignToIndividualUsers && (!userPassword || userPassword.length < 6)) {
-      toast.error("Kullanıcı şifresi en az 6 karakter olmalıdır.")
+      toast.error(t("bulkImport.passwordMinLength"))
       return
     }
 
@@ -1594,7 +1594,7 @@ export default function BulkImportPage() {
 
       const result = res.data
       toast.success(
-        `${result.created_cards} kart oluşturuldu, ${result.updated_cards} kart güncellendi`
+        t("bulkImport.importSuccess").replace("{created}", String(result.created_cards)).replace("{updated}", String(result.updated_cards))
       )
 
       if (result.errors?.length) console.warn("Import errors:", result.errors)
@@ -1628,7 +1628,7 @@ export default function BulkImportPage() {
       console.error("Import error:", err)
       toast.error(
         (err as { message?: string })?.message ||
-          "Kartlar içe aktarılırken bir hata oluştu"
+          t("bulkImport.importError")
       )
     } finally {
       setImportingCards(false)
@@ -1864,7 +1864,7 @@ export default function BulkImportPage() {
                 <div className="bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-md p-3">
                   <div className="flex items-center gap-2 font-medium text-sm text-yellow-800 dark:text-yellow-200 mb-1">
                     <AlertTriangle className="size-4" />
-                    Parse Uyarıları
+                    {t("bulkImport.parseWarnings")}
                   </div>
                   <ul className="text-sm text-yellow-700 dark:text-yellow-300 list-disc pl-5">
                     {csvParseErrors.map((err, i) => (
@@ -1891,7 +1891,7 @@ export default function BulkImportPage() {
                     disabled={loadingFieldTypes}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Field Type seçin..." />
+                      <SelectValue placeholder={t("bulkImport.selectFieldType")} />
                     </SelectTrigger>
                     <SelectContent>
                       {fieldTypes.map((ft) => (
@@ -2046,7 +2046,7 @@ export default function BulkImportPage() {
                             value={row.name}
                             onChange={(e) => updateRowField(index, "name", e.target.value)}
                             onBlur={() => handleFieldBlur(index, "name")}
-                            placeholder="Ad Soyad"
+                            placeholder={t("bulkImport.namePlaceholder")}
                             className={`h-8 text-sm ${row.errors.name ? "border-destructive" : ""}`}
                           />
                           {row.errors.name && (
@@ -2149,7 +2149,7 @@ export default function BulkImportPage() {
                       <Upload className="size-4 mr-2" />
                       {t("importCards")}
                       {validationStats.invalid > 0 && (
-                        <span className="ml-1">({validationStats.invalid} hata var)</span>
+                        <span className="ml-1">({validationStats.invalid} {t("bulkImport.errorsExist")})</span>
                       )}
                     </>
                   )}

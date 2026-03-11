@@ -85,7 +85,7 @@ export default function MyCardsPage() {
       navigator.share({ url: shareUrl }).catch(() => {})
     } else {
       navigator.clipboard.writeText(shareUrl)
-      toast.success("Link copied!")
+      toast.success(t("linkCopied"))
     }
   }
 

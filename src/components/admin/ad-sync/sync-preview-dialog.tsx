@@ -119,10 +119,10 @@ export function SyncPreviewDialog({
                   <thead>
                     <tr className="border-b bg-muted/50 sticky top-0">
                       <th className="text-left p-2.5 font-medium">
-                        AD Name
+                        {t("adName")}
                       </th>
                       <th className="text-left p-2.5 font-medium">
-                        AD Email
+                        {t("adEmail")}
                       </th>
                       <th className="text-left p-2.5 font-medium">
                         {t("syncPreviewAction")}

@@ -207,7 +207,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
                       : "bg-orange-500/10 text-orange-600"
                   )}
                 >
-                  {role === "admin" ? "Super Admin" : "Company Admin"}
+                  {role === "admin" ? t("roleAdmin") : t("roleCompanyAdmin")}
                 </span>
               </div>
             </div>

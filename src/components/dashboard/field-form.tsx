@@ -190,7 +190,7 @@ export function FieldForm({
                 {data || t("fileInput")}
               </p>
               <p className="text-xs text-muted-foreground/60 mt-1">
-                Max 20MB
+                {t("maxFileSize20MB")}
               </p>
             </div>
           </div>

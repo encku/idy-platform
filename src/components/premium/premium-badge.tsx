@@ -1,4 +1,7 @@
+"use client"
+
 import { Crown } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/context"
 
 interface PremiumBadgeProps {
   size?: "sm" | "md"
@@ -6,6 +9,7 @@ interface PremiumBadgeProps {
 }
 
 export function PremiumBadge({ size = "md", className = "" }: PremiumBadgeProps) {
+  const { t } = useTranslation()
   const sizeClasses = {
     sm: "text-[9px] px-1.5 py-0.5 gap-0.5",
     md: "text-[10px] px-2 py-0.5 gap-1",
@@ -18,7 +22,7 @@ export function PremiumBadge({ size = "md", className = "" }: PremiumBadgeProps)
       className={`inline-flex items-center rounded-full font-bold uppercase tracking-wider bg-gradient-to-r from-yellow-500 to-amber-500 text-white ${sizeClasses[size]} ${className}`}
     >
       <Crown className={iconSize} />
-      PRO
+      {t("proBadge")}
     </span>
   )
 }

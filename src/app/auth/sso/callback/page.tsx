@@ -4,10 +4,12 @@ import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { Suspense } from "react"
+import { useTranslation } from "@/lib/i18n/context"
 
 function SSOCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { t } = useTranslation()
   const [error, setError] = useState("")
 
   useEffect(() => {
@@ -15,7 +17,7 @@ function SSOCallbackContent() {
     const state = searchParams.get("state")
 
     if (!code || !state) {
-      setError("Missing authorization code or state parameter")
+      setError(t("ssoMissingParams"))
       return
     }
 
@@ -29,7 +31,7 @@ function SSOCallbackContent() {
 
         if (!res.ok) {
           const data = await res.json().catch(() => null)
-          throw new Error(data?.error || "SSO authentication failed")
+          throw new Error(data?.error || t("ssoAuthFailed"))
         }
 
         const data = await res.json()
@@ -38,15 +40,15 @@ function SSOCallbackContent() {
           const redirectTo = searchParams.get("redirect_after") || "/"
           router.push(redirectTo)
         } else {
-          throw new Error("SSO authentication failed")
+          throw new Error(t("ssoAuthFailed"))
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "SSO authentication failed")
+        setError(err instanceof Error ? err.message : t("ssoAuthFailed"))
       }
     }
 
     exchangeCode()
-  }, [searchParams, router])
+  }, [searchParams, router, t])
 
   if (error) {
     return (
@@ -56,14 +58,14 @@ function SSOCallbackContent() {
             id
           </div>
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold">SSO Login Failed</h2>
+            <h2 className="text-xl font-semibold">{t("ssoLoginFailed")}</h2>
             <p className="text-muted-foreground text-sm">{error}</p>
           </div>
           <button
             onClick={() => router.push("/login")}
             className="text-sm text-foreground underline underline-offset-4 hover:text-foreground/80"
           >
-            Back to login
+            {t("backToLogin")}
           </button>
         </div>
       </div>
@@ -74,7 +76,7 @@ function SSOCallbackContent() {
     <div className="flex min-h-svh items-center justify-center">
       <div className="space-y-4 text-center">
         <Loader2 className="size-8 animate-spin mx-auto text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Completing SSO sign-in...</p>
+        <p className="text-sm text-muted-foreground">{t("ssoCompletingSignIn")}</p>
       </div>
     </div>
   )

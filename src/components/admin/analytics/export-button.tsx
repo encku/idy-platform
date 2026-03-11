@@ -52,10 +52,10 @@ export function ExportButton({ cardId }: ExportButtonProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem onClick={() => handleExport("pdf")}>
-          PDF
+          {t("exportPdf")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleExport("xlsx")}>
-          Excel
+          {t("exportExcel")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -205,7 +205,7 @@ export function ConnectionForm({ mode, connection }: ConnectionFormProps) {
                 />
                 {mode === "edit" && connection?.azure_client_secret_set && (
                   <p className="text-xs text-muted-foreground">
-                    Leave empty to keep the existing secret
+                    {t("leaveEmptyKeepSecret")}
                   </p>
                 )}
               </div>
@@ -255,7 +255,7 @@ export function ConnectionForm({ mode, connection }: ConnectionFormProps) {
                 />
                 {mode === "edit" && connection?.ldap_bind_password_set && (
                   <p className="text-xs text-muted-foreground">
-                    Leave empty to keep the existing password
+                    {t("leaveEmptyKeepPassword")}
                   </p>
                 )}
               </div>

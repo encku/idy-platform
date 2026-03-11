@@ -71,12 +71,12 @@ export function GrantPremiumDialog({
         <div className="space-y-4 py-2">
           {!userId && (
             <div className="space-y-2">
-              <Label>User ID</Label>
+              <Label>{t("userId")}</Label>
               <Input
                 type="number"
                 value={userIdInput}
                 onChange={(e) => setUserIdInput(e.target.value)}
-                placeholder="Enter user ID"
+                placeholder={t("enterUserId")}
               />
             </div>
           )}
