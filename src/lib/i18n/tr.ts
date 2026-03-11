@@ -329,6 +329,7 @@ const tr: Record<string, string> = {
   selectCards: "Kartları seçin",
   selectUsers: "Kullanıcıları seçin",
   info: "Bilgi",
+  assignedDate: "Eklenme Tarihi",
   // Analytics
   adminAnalytics: "Analitik",
   adminAnalyticsDesc: "Kart performans analizleri",

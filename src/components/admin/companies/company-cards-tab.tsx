@@ -20,6 +20,7 @@ import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query"
 import { useTranslation } from "@/lib/i18n/context"
 import { toast } from "sonner"
 import { Plus, Trash2, Search } from "lucide-react"
+import { format } from "date-fns"
 import type { CompanyCardAssignment } from "@/lib/admin/types"
 
 interface CompanyCardsTabProps {
@@ -99,6 +100,7 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
                 <TableHead>{t("cardName")}</TableHead>
                 <TableHead className="hidden sm:table-cell">{t("publicKey")}</TableHead>
                 <TableHead>{t("owner")}</TableHead>
+                <TableHead className="hidden md:table-cell">{t("assignedDate")}</TableHead>
                 <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
@@ -113,6 +115,9 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
                   </TableCell>
                   <TableCell className="text-sm max-w-[150px] truncate">
                     {a.user_name}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                    {a.inserted_at ? format(new Date(a.inserted_at), "dd.MM.yyyy") : "—"}
                   </TableCell>
                   <TableCell>
                     <Button

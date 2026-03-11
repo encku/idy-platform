@@ -177,6 +177,7 @@ export interface CompanyCardAssignment {
   public_key: string
   user_preferred_name: string
   user_name: string
+  inserted_at: string
 }
 
 export interface CompanyUserAssignment {
@@ -186,6 +187,7 @@ export interface CompanyUserAssignment {
   user_name: string
   user_email: string
   role_name: string
+  inserted_at: string
 }
 
 export interface CreateCompanyPayload {

@@ -329,6 +329,7 @@ const en: Record<string, string> = {
   selectCards: "Select cards",
   selectUsers: "Select users",
   info: "Info",
+  assignedDate: "Assigned Date",
   // Analytics
   adminAnalytics: "Analytics",
   adminAnalyticsDesc: "Card performance analytics",

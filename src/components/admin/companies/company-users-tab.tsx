@@ -20,6 +20,7 @@ import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query"
 import { useTranslation } from "@/lib/i18n/context"
 import { toast } from "sonner"
 import { Plus, Trash2, Search } from "lucide-react"
+import { format } from "date-fns"
 import type { CompanyUserAssignment } from "@/lib/admin/types"
 
 interface CompanyUsersTabProps {
@@ -99,6 +100,7 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
                 <TableHead>{t("name")}</TableHead>
                 <TableHead className="hidden sm:table-cell">{t("email")}</TableHead>
                 <TableHead>{t("role")}</TableHead>
+                <TableHead className="hidden md:table-cell">{t("assignedDate")}</TableHead>
                 <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
@@ -116,6 +118,9 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
                   </TableCell>
                   <TableCell className="text-sm">
                     {a.role_name}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                    {a.inserted_at ? format(new Date(a.inserted_at), "dd.MM.yyyy") : "—"}
                   </TableCell>
                   <TableCell>
                     <Button
