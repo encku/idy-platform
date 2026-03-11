@@ -63,7 +63,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/register") ||
     pathname.startsWith("/api/forgot-password") ||
     pathname.startsWith("/api/reset-password") ||
-    pathname.startsWith("/api/verify-email")
+    pathname.startsWith("/api/verify-email") ||
+    pathname.startsWith("/api/card/")
   ) {
     return NextResponse.next()
   }
