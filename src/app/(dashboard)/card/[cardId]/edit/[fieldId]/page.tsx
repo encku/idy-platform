@@ -88,10 +88,21 @@ export default function EditFieldPage() {
       const isFile = fieldType.regex === "file"
       const isFormatted =
         fieldType.format && Object.keys(fieldType.format).length > 0
+      const isPhone = fieldType.input_type_id === 5
 
-      if (!isFile && !isFormatted && fieldType.regex) {
+      if (!isFile && !isFormatted && !isPhone && fieldType.regex) {
         const regex = new RegExp(fieldType.regex)
         if (!regex.test(data)) {
+          setError(t("formErrors.error"))
+          setSaving(false)
+          return
+        }
+      }
+
+      // Phone: E.164 format check (7-15 digits)
+      if (isPhone) {
+        const digits = data.replace(/\D/g, "")
+        if (digits.length < 7 || digits.length > 15) {
           setError(t("formErrors.error"))
           setSaving(false)
           return
