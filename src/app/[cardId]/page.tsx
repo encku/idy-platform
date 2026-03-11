@@ -121,7 +121,7 @@ export default async function CardPage({
 
       <CardContent
         profile={data.user}
-        fields={data.card}
+        fields={data.card ?? []}
         leadSettings={leadSettings}
         cardId={cardId}
       />
