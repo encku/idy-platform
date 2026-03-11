@@ -61,7 +61,7 @@ export default function CompanyDetailPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-w-0">
       <AdminPageHeader
         title={company.name}
         backHref="/admin/companies"
@@ -75,7 +75,7 @@ export default function CompanyDetailPage() {
       <CompanyDetailCard company={company} />
 
       <Tabs defaultValue="cards">
-        <TabsList>
+        <TabsList className="w-full sm:w-fit">
           <TabsTrigger value="cards">{t("assignedCards")}</TabsTrigger>
           <TabsTrigger value="users">{t("assignedUsers")}</TabsTrigger>
           {role === "admin" && (

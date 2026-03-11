@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import {
   Table,
   TableBody,
@@ -65,8 +65,8 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="relative max-w-sm flex-1">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             value={search}
@@ -75,7 +75,7 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
             className="pl-9"
           />
         </div>
-        <Button size="sm" onClick={() => setShowAssign(true)}>
+        <Button size="sm" className="shrink-0" onClick={() => setShowAssign(true)}>
           <Plus className="size-4 mr-2" />
           {t("assignUser")}
         </Button>
@@ -92,12 +92,12 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
           {t("noResults")}
         </p>
       ) : (
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("name")}</TableHead>
-                <TableHead>{t("email")}</TableHead>
+                <TableHead className="hidden sm:table-cell">{t("email")}</TableHead>
                 <TableHead>{t("role")}</TableHead>
                 <TableHead className="w-12" />
               </TableRow>
@@ -105,10 +105,13 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
             <TableBody>
               {assignments.map((a) => (
                 <TableRow key={a.id}>
-                  <TableCell className="font-medium">
-                    {a.user_name}
+                  <TableCell className="font-medium max-w-[200px]">
+                    <div className="truncate">{a.user_name}</div>
+                    <div className="sm:hidden text-xs text-muted-foreground truncate">
+                      {a.user_email}
+                    </div>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="hidden sm:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
                     {a.user_email}
                   </TableCell>
                   <TableCell className="text-sm">

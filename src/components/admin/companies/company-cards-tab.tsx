@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import {
   Table,
   TableBody,
@@ -31,8 +31,6 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
   const [showAssign, setShowAssign] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<CompanyCardAssignment | null>(null)
   const [deleting, setDeleting] = useState(false)
-
-  const extraParams = useMemo(() => ({ company_id: companyId }), [companyId])
 
   const {
     data: assignments,
@@ -67,8 +65,8 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="relative max-w-sm flex-1">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             value={search}
@@ -77,7 +75,7 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
             className="pl-9"
           />
         </div>
-        <Button size="sm" onClick={() => setShowAssign(true)}>
+        <Button size="sm" className="shrink-0" onClick={() => setShowAssign(true)}>
           <Plus className="size-4 mr-2" />
           {t("assignCard")}
         </Button>
@@ -94,12 +92,12 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
           {t("noResults")}
         </p>
       ) : (
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("cardName")}</TableHead>
-                <TableHead>{t("publicKey")}</TableHead>
+                <TableHead className="hidden sm:table-cell">{t("publicKey")}</TableHead>
                 <TableHead>{t("owner")}</TableHead>
                 <TableHead className="w-12" />
               </TableRow>
@@ -107,13 +105,13 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
             <TableBody>
               {assignments.map((a) => (
                 <TableRow key={a.assignment_id}>
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium max-w-[200px] truncate">
                     {a.user_preferred_name || a.public_key}
                   </TableCell>
-                  <TableCell className="text-xs font-mono text-muted-foreground">
+                  <TableCell className="hidden sm:table-cell text-xs font-mono text-muted-foreground max-w-[180px] truncate">
                     {a.public_key}
                   </TableCell>
-                  <TableCell className="text-sm">
+                  <TableCell className="text-sm max-w-[150px] truncate">
                     {a.user_name}
                   </TableCell>
                   <TableCell>
