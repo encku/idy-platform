@@ -99,6 +99,7 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
               <TableRow>
                 <TableHead>{t("cardName")}</TableHead>
                 <TableHead className="hidden sm:table-cell">{t("publicKey")}</TableHead>
+                <TableHead>{t("profileName")}</TableHead>
                 <TableHead>{t("owner")}</TableHead>
                 <TableHead className="hidden md:table-cell">{t("assignedDate")}</TableHead>
                 <TableHead className="w-12" />
@@ -112,6 +113,9 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
                   </TableCell>
                   <TableCell className="hidden sm:table-cell text-xs font-mono text-muted-foreground max-w-[180px] truncate">
                     {a.public_key}
+                  </TableCell>
+                  <TableCell className="text-sm max-w-[150px] truncate">
+                    {a.profile_name || "—"}
                   </TableCell>
                   <TableCell className="text-sm max-w-[150px] truncate">
                     {a.user_name}
