@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useAdminContext } from "@/components/admin/admin-layout-shell"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { Pagination } from "@/components/admin/pagination"
 import { AssignCardDialog } from "./assign-card-dialog"
@@ -29,6 +30,7 @@ interface CompanyCardsTabProps {
 
 export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
   const { t } = useTranslation()
+  const { setSelectedCardPublicKey } = useAdminContext()
   const [showAssign, setShowAssign] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<CompanyCardAssignment | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -107,7 +109,11 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
             </TableHeader>
             <TableBody>
               {assignments.map((a) => (
-                <TableRow key={a.assignment_id}>
+                <TableRow
+                  key={a.assignment_id}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedCardPublicKey(a.public_key)}
+                >
                   <TableCell className="font-medium max-w-[200px] truncate">
                     {a.user_preferred_name || a.public_key}
                   </TableCell>
@@ -128,7 +134,7 @@ export function CompanyCardsTab({ companyId }: CompanyCardsTabProps) {
                       variant="ghost"
                       size="icon"
                       className="size-8 text-destructive"
-                      onClick={() => setDeleteTarget(a)}
+                      onClick={(e) => { e.stopPropagation(); setDeleteTarget(a) }}
                     >
                       <Trash2 className="size-4" />
                     </Button>
