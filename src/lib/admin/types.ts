@@ -30,7 +30,7 @@ export interface AdminCardField {
   name: string
   data: string
   is_active: boolean
-  order: number
+  order_number: number
   field_type: {
     name: string
     icon_url: string

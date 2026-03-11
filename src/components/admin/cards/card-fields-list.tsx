@@ -42,7 +42,7 @@ export function CardFieldsList({ fields }: CardFieldsListProps) {
           {fields.map((field) => (
             <TableRow key={field.id}>
               <TableCell className="text-muted-foreground">
-                {field.order}
+                {field.order_number}
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
