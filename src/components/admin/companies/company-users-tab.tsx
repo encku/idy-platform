@@ -37,7 +37,7 @@ export function CompanyUsersTab({ companyId }: CompanyUsersTabProps) {
       const res = await apiClient.get<{ data: CompanyUserAssignment[] }>(
         `/api/admin/companies/${companyId}/users`
       )
-      setAssignments(res.data || [])
+      setAssignments((res.data || []).filter((a) => a.user))
     } catch {
       setAssignments([])
     } finally {
