@@ -56,6 +56,7 @@ export default function ProfilePage() {
   const [cardProfile, setCardProfile] = useState<CardProfile | null>(null)
   const [cardList, setCardList] = useState<CardListItem[]>([])
   const [selectedCardIndex, setSelectedCardIndex] = useState(0)
+  const [selectedPublicKey, setSelectedPublicKey] = useState<string | null>(null)
   const [card, setCard] = useState<CardData | null>(null)
   const [fields, setFields] = useState<FieldItem[]>([])
   const [isDirect, setIsDirect] = useState(false)
@@ -114,13 +115,18 @@ export default function ProfilePage() {
       setCardList(cardsRes.data)
 
       if (cardsRes.data.length >= 1) {
-        const idx = Math.min(selectedCardIndex, cardsRes.data.length - 1)
+        // Find the previously selected card by public_key
+        const prevIdx = selectedPublicKey
+          ? cardsRes.data.findIndex((c) => c.public_key === selectedPublicKey)
+          : -1
+        const idx = prevIdx >= 0 ? prevIdx : Math.min(selectedCardIndex, cardsRes.data.length - 1)
+        setSelectedCardIndex(idx)
         await loadCard(cardsRes.data[idx].public_key)
       }
     } catch {
       // handled by apiClient
     }
-  }, [loadCard, selectedCardIndex])
+  }, [loadCard, selectedCardIndex, selectedPublicKey])
 
   useEffect(() => {
     async function init() {
@@ -135,6 +141,7 @@ export default function ProfilePage() {
         setCardList(cardsRes.data)
 
         if (cardsRes.data.length >= 1) {
+          setSelectedPublicKey(cardsRes.data[0].public_key)
           await loadCard(cardsRes.data[0].public_key)
         }
       } catch {
@@ -181,6 +188,7 @@ export default function ProfilePage() {
 
   function handleCardSelect(index: number) {
     setSelectedCardIndex(index)
+    setSelectedPublicKey(cardList[index].public_key)
     loadCard(cardList[index].public_key)
   }
 
