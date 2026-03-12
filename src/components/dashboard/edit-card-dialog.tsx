@@ -53,7 +53,9 @@ export function EditCardDialog({
   const { hasFeature } = useFeatures()
   const [name, setName] = useState(currentName)
   const [themeColor, setThemeColor] = useState("#0077CC")
+  const [initialThemeColor, setInitialThemeColor] = useState("#0077CC")
   const [viewMode, setViewMode] = useState("standard")
+  const [initialViewMode, setInitialViewMode] = useState("standard")
   const [saving, setSaving] = useState(false)
   const [upgradeOpen, setUpgradeOpen] = useState(false)
   const hasThemeAccess = hasFeature(FEATURES.CUSTOM_THEMES)
@@ -66,8 +68,14 @@ export function EditCardDialog({
         `/api/user/card-profile/${cardId}`
       )
       .then((res) => {
-        if (res.data.theme_color) setThemeColor(res.data.theme_color)
-        if (res.data.view_mode) setViewMode(res.data.view_mode)
+        if (res.data.theme_color) {
+          setThemeColor(res.data.theme_color)
+          setInitialThemeColor(res.data.theme_color)
+        }
+        if (res.data.view_mode) {
+          setViewMode(res.data.view_mode)
+          setInitialViewMode(res.data.view_mode)
+        }
       })
       .catch(() => {})
   }, [open, cardId, currentName])
@@ -76,15 +84,20 @@ export function EditCardDialog({
     if (!name.trim()) return
     setSaving(true)
     try {
-      await Promise.all([
+      const requests: Promise<unknown>[] = [
         apiClient.put(`/api/cards/${cardId}/name`, {
           user_preferred_name: name.trim(),
         }),
-        apiClient.put(`/api/user/card-profile/${cardId}`, {
-          theme_color: themeColor,
-          view_mode: viewMode,
-        }),
-      ])
+      ]
+      if (themeColor !== initialThemeColor || viewMode !== initialViewMode) {
+        requests.push(
+          apiClient.put(`/api/user/card-profile/${cardId}`, {
+            theme_color: themeColor,
+            view_mode: viewMode,
+          })
+        )
+      }
+      await Promise.all(requests)
       toast.success(t("editCardSuccess"))
       onSuccess(name.trim())
       onClose()
