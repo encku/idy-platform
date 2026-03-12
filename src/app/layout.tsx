@@ -17,8 +17,7 @@ const geistMono = Geist_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
   const host = headersList.get("host") || "idycard.com";
-  const protocol = headersList.get("x-forwarded-proto") || "https";
-  const baseUrl = `${protocol}://${host}`;
+  const baseUrl = `https://${host}`;
 
   return {
     metadataBase: new URL(baseUrl),
