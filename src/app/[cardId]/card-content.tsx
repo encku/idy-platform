@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Loader2, X, Check, ExternalLink, UserPlus, Download } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -192,13 +193,47 @@ export function CardContent({
     window.open(fallbackUrl, "_blank", "noopener,noreferrer")
   }
 
+  function isLinkField(field: CardField) {
+    const prefix = (field.prefix || "").trim()
+    return prefix.length > 0
+  }
+
+  function getCopyText(field: CardField): string {
+    if (field.formatted_data && typeof field.formatted_data === "object") {
+      const fd = field.formatted_data as Record<string, string>
+      return Object.entries(fd)
+        .filter(([, v]) => v)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join("\n")
+    }
+    return field.data || ""
+  }
+
   async function handleFieldClick(field: CardField) {
     const url = getFieldUrl(field)
-    if (url) {
+
+    if (isLinkField(field)) {
+      // Has a URL prefix (tel:, mailto:, https://...) — open as link
       if (isPdfUrl(url)) {
         setPdfUrl(url)
       } else {
         openDeepLink(field)
+      }
+    } else if (field.data || field.formatted_data) {
+      // No URL prefix — copyable content (text, bank account, etc.)
+      const text = getCopyText(field)
+      try {
+        await navigator.clipboard.writeText(text)
+        toast.success(t("copied"))
+      } catch {
+        // Fallback for older browsers
+        const textarea = document.createElement("textarea")
+        textarea.value = text
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand("copy")
+        document.body.removeChild(textarea)
+        toast.success(t("copied"))
       }
     }
 
