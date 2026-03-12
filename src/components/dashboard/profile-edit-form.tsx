@@ -11,6 +11,7 @@ import { UpgradeDialog } from "@/components/premium/upgrade-dialog"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 import { FEATURES } from "@/lib/features"
 import { useFeatures } from "@/lib/features/context"
@@ -189,8 +190,8 @@ export function ProfileEditForm({ cardId }: ProfileEditFormProps) {
       }
 
       await apiClient.put(apiEndpoint, formData)
-      router.push("/")
-      router.refresh()
+      toast.success(t("saved"))
+      router.back()
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code
       setError(code ? t(`errorCodes.${code}`) : t("errorCodes.1"))
