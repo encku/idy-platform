@@ -61,6 +61,6 @@ export async function PUT(
   // Invalidate cached public card page and OG images
   revalidateTag(`card-${cardId}`, { expire: 0 })
 
-  const data = await res.json()
-  return NextResponse.json(data)
+  const data = await res.json().catch(() => null)
+  return NextResponse.json(data ?? { success: true })
 }
