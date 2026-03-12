@@ -110,11 +110,9 @@ export function FieldListItem({
     onActiveChange(id, checked)
     try {
       if (isDirect) {
-        if (checked) {
-          await apiClient.post(`/api/cards/${cardId}/direct-mode`, {
-            card_field_id: id,
-          })
-        }
+        await apiClient.post(`/api/cards/${cardId}/direct-mode`, {
+          card_field_id: checked ? id : null,
+        })
       } else {
         await apiClient.put(`/api/cards/${cardId}/fields/${id}/active`, {
           is_active: checked,
