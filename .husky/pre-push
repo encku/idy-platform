@@ -1,0 +1,7 @@
+echo "Pre-push: Running full test suite..."
+pnpm test:ci || exit 1
+
+echo "Pre-push: Building project..."
+pnpm build || exit 1
+
+echo "Pre-push: All checks passed!"

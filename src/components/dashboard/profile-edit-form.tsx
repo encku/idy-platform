@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
@@ -140,9 +141,9 @@ export function ProfileEditForm({ cardId }: ProfileEditFormProps) {
   function handleCropperClose() {
     setCropperOpen(false)
     setSelectedImage("")
-    profileRef.current && (profileRef.current.value = "")
-    backgroundRef.current && (backgroundRef.current.value = "")
-    badgeRef.current && (badgeRef.current.value = "")
+    if (profileRef.current) profileRef.current.value = ""
+    if (backgroundRef.current) backgroundRef.current.value = ""
+    if (badgeRef.current) badgeRef.current.value = ""
   }
 
   async function compressImage(file: File, maxSize: number) {
@@ -174,7 +175,7 @@ export function ProfileEditForm({ cardId }: ProfileEditFormProps) {
       formData.append("description", data.description || "")
 
       if (cardId) {
-        formData.append("is_hidden", data.is_hidden ? "1" : "0")
+        formData.append("is_hidden", data.is_hidden ? "true" : "false")
       }
 
       if (croppedProfile) {

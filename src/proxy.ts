@@ -12,6 +12,7 @@ const ADMIN_ROLES = ["admin", "company_admin"]
 const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/verify-email"]
 
 // Admin routes that require authentication
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ADMIN_ROUTES = ["/", "/dashboard", "/settings", "/users"]
 
 const BOT_USER_AGENTS = [
@@ -64,14 +65,18 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/forgot-password") ||
     pathname.startsWith("/api/reset-password") ||
     pathname.startsWith("/api/verify-email") ||
-    pathname.startsWith("/api/card/")
+    pathname.startsWith("/api/card/") ||
+    pathname.startsWith("/api/revalidate")
   ) {
     return NextResponse.next()
   }
 
   // Card routes are public — no auth required
+  // Prevent Cloudflare from caching dynamic card pages (CDN-Cache-Control is stripped before reaching the client)
   if (isCardRoute(pathname)) {
-    return NextResponse.next()
+    const response = NextResponse.next()
+    response.headers.set("CDN-Cache-Control", "no-store")
+    return response
   }
 
   const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value

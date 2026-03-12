@@ -1,0 +1,7 @@
+echo "Pre-commit: Running type check..."
+npx tsc --noEmit --pretty || exit 1
+
+echo "Pre-commit: Running lint-staged..."
+npx lint-staged || exit 1
+
+echo "Pre-commit: All checks passed!"

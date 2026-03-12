@@ -66,6 +66,7 @@ export async function PUT(
     return NextResponse.json(err || { error: "Failed" }, { status: res.status })
   }
 
+  revalidateTag(`card-${cardId}`, { expire: 0 })
   const data = await res.json().catch(() => ({}))
   return NextResponse.json(data)
 }
